@@ -29,7 +29,7 @@ export default function Navbar() {
               Shop
             </Link>
             <Link href="/membership" className="hover:text-accent transition-colors">
-              Membership
+              Join Us!
             </Link>
             <Link href="/about" className="hover:text-accent transition-colors">
               About
