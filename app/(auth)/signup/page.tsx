@@ -1,19 +1,35 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
+const MEMBERSHIP_TIERS = [
+  { name: 'Free', price: 0 },
+  { name: 'Supporter', price: 5 },
+  { name: 'Advocate', price: 10 },
+  { name: 'Champion', price: 20 },
+];
+
 export default function Signup() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
+  const [selectedTier, setSelectedTier] = useState('free');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const tierParam = searchParams.get('tier');
+    if (tierParam) {
+      setSelectedTier(tierParam);
+    }
+  }, [searchParams]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,12 +49,16 @@ export default function Signup() {
     setLoading(true);
 
     try {
+      const tier = MEMBERSHIP_TIERS.find(t => t.name.toLowerCase() === selectedTier);
+
       const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: name,
+            membership_tier: tier?.name || 'Free',
+            membership_price: tier?.price || 0,
           },
         },
       });
@@ -47,9 +67,16 @@ export default function Signup() {
 
       if (data.user) {
         setSuccess(true);
-        // Redirect to home after 2 seconds
+
+        // Conditional redirect based on tier
         setTimeout(() => {
-          router.push('/');
+          if (tier?.price === 0) {
+            // Free tier - go directly to library
+            router.push('/library');
+          } else {
+            // Paid tier - redirect to Stripe Checkout
+            router.push(`/api/checkout?tier=${selectedTier}`);
+          }
         }, 2000);
       }
     } catch (err) {
@@ -91,6 +118,27 @@ export default function Signup() {
               required
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
             />
+          </div>
+
+          <div>
+            <label htmlFor="tier" className="block font-crimson mb-2">
+              Membership Tier
+            </label>
+            <select
+              id="tier"
+              value={selectedTier}
+              onChange={(e) => setSelectedTier(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              {MEMBERSHIP_TIERS.map((tier) => (
+                <option key={tier.name} value={tier.name.toLowerCase()}>
+                  {tier.name} - ${tier.price}/month
+                </option>
+              ))}
+            </select>
+            <p className="text-sm text-gray-600 mt-2 font-crimson">
+              All tiers have the same access. Choose what you can afford to support mental health.
+            </p>
           </div>
 
           <div>

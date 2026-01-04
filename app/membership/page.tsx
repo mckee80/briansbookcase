@@ -104,7 +104,7 @@ export default function Membership() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/shop">
+                <Link href={`/signup?tier=${tier.name.toLowerCase()}`}>
                   <button
                     disabled={tier.buttonDisabled}
                     className={`w-full py-3 rounded-lg font-semibold transition-colors font-crimson ${
