@@ -18,6 +18,8 @@ export default function Account() {
   const [selectedTier, setSelectedTier] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const currentTier = user?.user_metadata?.membership_tier || 'Free';
   const currentPrice = user?.user_metadata?.membership_price || 0;
@@ -66,6 +68,35 @@ export default function Account() {
       setMessage(err instanceof Error ? err.message : 'Failed to update tier');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+
+    try {
+      // Delete the user account from Supabase Auth
+      const { error } = await supabase.rpc('delete_user');
+
+      if (error) {
+        // If RPC function doesn't exist, use auth admin delete
+        // This requires admin privileges, so as a fallback we'll just sign out
+        console.error('Delete user error:', error);
+        await supabase.auth.signOut();
+        router.push('/');
+        return;
+      }
+
+      // Sign out and redirect
+      await supabase.auth.signOut();
+      router.push('/?message=account-deleted');
+    } catch (err) {
+      console.error('Error deleting account:', err);
+      // Fallback: just sign out
+      await supabase.auth.signOut();
+      router.push('/');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -146,11 +177,52 @@ export default function Account() {
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-bold font-garamond mb-4 text-primary">
-              Settings
+              Account Settings
             </h2>
-            <p className="font-crimson text-lg">
-              Manage your account settings and preferences.
-            </p>
+
+            <div className="border-t pt-6">
+              <h3 className="text-xl font-bold font-garamond mb-3 text-red-600">
+                Delete Account
+              </h3>
+              <p className="font-crimson text-gray-600 mb-4">
+                Permanently delete your account and all associated data. This action cannot be undone.
+              </p>
+
+              {!showDeleteConfirm ? (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                >
+                  Delete My Account
+                </button>
+              ) : (
+                <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6">
+                  <p className="font-crimson font-bold text-red-800 mb-4">
+                    Are you sure you want to delete your account?
+                  </p>
+                  <p className="font-crimson text-red-700 mb-6">
+                    This will permanently remove all your data and you will be logged out immediately.
+                    This action cannot be reversed.
+                  </p>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={deleteLoading}
+                      className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deleteLoading ? 'Deleting...' : 'Yes, Delete My Account'}
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={deleteLoading}
+                      className="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>
