@@ -1,5 +1,52 @@
 # Supabase Setup Instructions
 
+## Admin Access Configuration
+
+To restrict admin page access to specific users, you need to configure admin emails.
+
+### Option 1: Using Admin Email List (Current Implementation)
+
+1. Open `lib/adminCheck.ts`
+2. Add your admin email address to the `ADMIN_EMAILS` array:
+
+```typescript
+const ADMIN_EMAILS = [
+  'mckee80@hotmail.com', // Your admin email
+  // Add more admin emails here if needed
+];
+```
+
+3. Save the file
+4. Users with these email addresses will have access to the `/admin` page
+
+### Option 2: Using User Metadata (Alternative)
+
+For a more flexible approach using Supabase user metadata:
+
+1. Go to your Supabase project dashboard
+2. Navigate to **Authentication** → **Users**
+3. Click on the user you want to make an admin
+4. Under **User Metadata**, add:
+   ```json
+   {
+     "role": "admin"
+   }
+   ```
+5. Update your code to use `isAdminByRole()` instead of `isAdmin()` in:
+   - `components/AdminRoute.tsx`
+   - `components/Navbar.tsx`
+
+### How It Works:
+
+- **AdminRoute Component**: Protects the admin page from unauthorized access
+- **isAdmin() Function**: Checks if user's email is in the admin list
+- **Navbar**: Only shows "Admin" link to users with admin access
+- **Automatic Redirects**:
+  - Not logged in → Redirected to `/login`
+  - Logged in but not admin → Redirected to home with error message
+
+---
+
 ## Delete User Function
 
 To enable the account deletion feature, you need to create a database function in Supabase.

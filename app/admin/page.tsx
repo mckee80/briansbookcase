@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ProtectedRoute, useAuth } from '@/components';
+import { AdminRoute, useAuth } from '@/components';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Book, Users, Trash2, Plus, PieChartIcon } from 'lucide-react';
 
@@ -86,7 +86,7 @@ export default function AdminPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <AdminRoute>
       <main className="min-h-screen p-8 bg-parchment">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
@@ -401,6 +401,6 @@ export default function AdminPage() {
           </div>
         </div>
       </main>
-    </ProtectedRoute>
+    </AdminRoute>
   );
 }

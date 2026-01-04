@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from './AuthProvider';
 import { useRouter } from 'next/navigation';
+import { isAdmin } from '@/lib/adminCheck';
 
 export default function Navbar() {
   const { user, signOut } = useAuth();
@@ -43,9 +44,11 @@ export default function Navbar() {
                 <Link href="/account" className="hover:text-accent transition-colors">
                   Account
                 </Link>
-                <Link href="/admin" className="hover:text-accent transition-colors">
-                  Admin
-                </Link>
+                {isAdmin(user) && (
+                  <Link href="/admin" className="hover:text-accent transition-colors">
+                    Admin
+                  </Link>
+                )}
                 <button
                   onClick={handleSignOut}
                   className="px-4 py-2 bg-accent rounded hover:bg-opacity-80 transition-colors"
