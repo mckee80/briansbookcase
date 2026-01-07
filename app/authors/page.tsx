@@ -50,7 +50,7 @@ export default function Authors() {
                 {author.books.map((book) => (
                   <div key={book.id} className="border-l-2 border-accent/30 pl-4">
                     <p className="font-bold font-garamond text-primary">{book.title}</p>
-                    <p className="text-sm font-crimson text-gray-600">{book.genre} • {book.publicationYear}</p>
+                    <p className="text-sm font-crimson text-gray-600">{book.genre} • {book.year}</p>
                   </div>
                 ))}
               </div>
