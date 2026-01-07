@@ -1,23 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AdminRoute, useAuth } from '@/components';
+import { useData } from '@/contexts/DataContext';
+import { extractEbookMetadata } from '@/lib/extractEbookCover';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Book, Users, Trash2, Plus, PieChartIcon } from 'lucide-react';
-
-// Mock data for initial state
-const initialEbooks = [
-  { id: 1, title: 'Whispers of Tomorrow', author: 'Sarah Mitchell', genre: 'Science Fiction', year: 2024 },
-  { id: 2, title: 'The Silent Echo', author: 'James Parker', genre: 'Mystery', year: 2023 },
-  { id: 3, title: 'Beyond the Horizon', author: 'Sarah Mitchell', genre: 'Adventure', year: 2024 },
-  { id: 4, title: 'The Lighthouse Song', author: 'Maria Rodriguez', genre: 'Romance', year: 2023 },
-];
-
-const initialAuthors = [
-  { id: 1, name: 'Sarah Mitchell', email: 'sarah@example.com', booksCount: 2 },
-  { id: 2, name: 'James Parker', email: 'james@example.com', booksCount: 1 },
-  { id: 3, name: 'Maria Rodriguez', email: 'maria@example.com', booksCount: 1 },
-];
 
 // Mock membership tier data - in production, this would come from database
 const membershipData = [
@@ -29,59 +17,128 @@ const membershipData = [
 
 export default function AdminPage() {
   const { user } = useAuth();
+  const { ebooks, authors, addEbook, removeEbook, addAuthor, removeAuthor } = useData();
   const [activeTab, setActiveTab] = useState<'ebooks' | 'authors' | 'analytics'>('ebooks');
 
   // Ebook state
-  const [ebooks, setEbooks] = useState(initialEbooks);
-  const [newEbook, setNewEbook] = useState({ title: '', author: '', genre: '', year: new Date().getFullYear() });
+  const [newEbook, setNewEbook] = useState({
+    title: '',
+    author: '',
+    genre: '',
+    year: new Date().getFullYear(),
+    description: '',
+    coverImage: ''
+  });
   const [showAddEbook, setShowAddEbook] = useState(false);
+  const [ebookFile, setEbookFile] = useState<File | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // Author state
-  const [authors, setAuthors] = useState(initialAuthors);
   const [newAuthor, setNewAuthor] = useState({ name: '', email: '' });
   const [showAddAuthor, setShowAddAuthor] = useState(false);
 
-  // Ebook management
-  const handleAddEbook = () => {
-    if (newEbook.title && newEbook.author && newEbook.genre) {
-      const ebook = {
-        id: Math.max(...ebooks.map(e => e.id), 0) + 1,
-        ...newEbook,
-      };
-      setEbooks([...ebooks, ebook]);
-      setNewEbook({ title: '', author: '', genre: '', year: new Date().getFullYear() });
-      setShowAddEbook(false);
+  // Handle ebook file selection and metadata extraction
+  const handleEbookFileChange = async (file: File | null) => {
+    setEbookFile(file);
+
+    if (file && file.name.toLowerCase().endsWith('.epub')) {
+      try {
+        const metadata = await extractEbookMetadata(file);
+
+        // Auto-fill title if extracted and field is empty
+        if (metadata.title && !newEbook.title) {
+          setNewEbook(prev => ({ ...prev, title: metadata.title! }));
+        }
+
+        // Auto-fill author if extracted and field is empty
+        if (metadata.author && !newEbook.author) {
+          setNewEbook(prev => ({ ...prev, author: metadata.author! }));
+        }
+
+        // Show extracted metadata in console for debugging
+        if (metadata.title || metadata.author) {
+          console.log('Auto-filled from EPUB:', {
+            title: metadata.title,
+            author: metadata.author
+          });
+        }
+      } catch (error) {
+        console.error('Error extracting metadata:', error);
+      }
     }
   };
 
-  const handleRemoveEbook = (id: number) => {
+  // Ebook management
+  const handleAddEbook = async () => {
+    if (newEbook.title && newEbook.author && newEbook.genre && ebookFile) {
+      setUploading(true);
+      try {
+        await addEbook(newEbook, ebookFile, coverImageFile || undefined);
+        setNewEbook({
+          title: '',
+          author: '',
+          genre: '',
+          year: new Date().getFullYear(),
+          description: '',
+          coverImage: ''
+        });
+        setEbookFile(null);
+        setCoverImageFile(null);
+        setShowAddEbook(false);
+      } catch (error) {
+        alert('Failed to add ebook. Please try again.');
+        console.error(error);
+      } finally {
+        setUploading(false);
+      }
+    } else {
+      alert('Please fill in all required fields and select an ebook file.');
+    }
+  };
+
+  const handleRemoveEbook = async (id: number) => {
     if (confirm('Are you sure you want to remove this ebook?')) {
-      setEbooks(ebooks.filter(e => e.id !== id));
+      try {
+        await removeEbook(id);
+      } catch (error: any) {
+        const errorMessage = error?.message || 'Unknown error';
+        alert(`Failed to remove ebook: ${errorMessage}`);
+        console.error('Full error:', error);
+      }
     }
   };
 
   // Author management
-  const handleAddAuthor = () => {
+  const handleAddAuthor = async () => {
     if (newAuthor.name && newAuthor.email) {
-      const author = {
-        id: Math.max(...authors.map(a => a.id), 0) + 1,
-        ...newAuthor,
-        booksCount: 0,
-      };
-      setAuthors([...authors, author]);
-      setNewAuthor({ name: '', email: '' });
-      setShowAddAuthor(false);
+      try {
+        await addAuthor(newAuthor);
+        setNewAuthor({ name: '', email: '' });
+        setShowAddAuthor(false);
+      } catch (error) {
+        alert('Failed to add author. Please try again.');
+        console.error(error);
+      }
     }
   };
 
-  const handleRemoveAuthor = (id: number) => {
+  const handleRemoveAuthor = async (id: number) => {
     const author = authors.find(a => a.id === id);
     if (author && author.booksCount > 0) {
       alert(`Cannot remove ${author.name} - they have ${author.booksCount} book(s) in the library.`);
       return;
     }
     if (confirm('Are you sure you want to remove this author?')) {
-      setAuthors(authors.filter(a => a.id !== id));
+      try {
+        const success = await removeAuthor(id);
+        if (!success) {
+          alert('Failed to remove author. Please try again.');
+        }
+      } catch (error) {
+        alert('Failed to remove author. Please try again.');
+        console.error(error);
+      }
     }
   };
 
@@ -160,21 +217,21 @@ export default function AdminPage() {
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <input
                           type="text"
-                          placeholder="Book Title"
+                          placeholder="Book Title *"
                           value={newEbook.title}
                           onChange={(e) => setNewEbook({ ...newEbook, title: e.target.value })}
                           className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                         />
                         <input
                           type="text"
-                          placeholder="Author Name"
+                          placeholder="Author Name *"
                           value={newEbook.author}
                           onChange={(e) => setNewEbook({ ...newEbook, author: e.target.value })}
                           className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                         />
                         <input
                           type="text"
-                          placeholder="Genre"
+                          placeholder="Genre *"
                           value={newEbook.genre}
                           onChange={(e) => setNewEbook({ ...newEbook, genre: e.target.value })}
                           className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
@@ -187,12 +244,60 @@ export default function AdminPage() {
                           className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                         />
                       </div>
+                      <div className="mb-4">
+                        <textarea
+                          placeholder="Description (optional)"
+                          value={newEbook.description}
+                          onChange={(e) => setNewEbook({ ...newEbook, description: e.target.value })}
+                          rows={3}
+                          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-semibold font-crimson text-primary mb-2">
+                          Cover Image (optional)
+                        </label>
+                        <p className="text-xs text-gray-500 mb-2">
+                          For EPUB files, the cover will be automatically extracted. Only upload if you want to use a different cover image.
+                        </p>
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png,.webp"
+                          onChange={(e) => setCoverImageFile(e.target.files?.[0] || null)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                        {coverImageFile && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            Selected: {coverImageFile.name} ({(coverImageFile.size / 1024).toFixed(0)} KB)
+                          </p>
+                        )}
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-semibold font-crimson text-primary mb-2">
+                          Ebook File (epub, pdf, mobi, etc.)
+                        </label>
+                        <p className="text-xs text-gray-500 mb-2">
+                          For EPUB files, title and author will be automatically extracted if available.
+                        </p>
+                        <input
+                          type="file"
+                          accept=".epub,.pdf,.mobi,.azw,.azw3,.txt"
+                          onChange={(e) => handleEbookFileChange(e.target.files?.[0] || null)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                        {ebookFile && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            Selected: {ebookFile.name} ({(ebookFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </p>
+                        )}
+                      </div>
                       <div className="flex gap-4">
                         <button
                           onClick={handleAddEbook}
-                          className="px-6 py-2 bg-accent text-white rounded hover:bg-primary transition-colors"
+                          disabled={uploading}
+                          className="px-6 py-2 bg-accent text-white rounded hover:bg-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          Save Ebook
+                          {uploading ? 'Uploading...' : 'Save Ebook'}
                         </button>
                         <button
                           onClick={() => setShowAddEbook(false)}
