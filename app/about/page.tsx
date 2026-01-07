@@ -21,10 +21,10 @@ export default function About() {
           </h3>
           <div className="font-crimson text-lg leading-relaxed text-primary space-y-6">
             <p className="drop-cap">
-              My brother, Brian, was a writer. He loved stories and believed in their power to inspire or connect or soothe. It was his avocation rather than his occupation, though that wasn't his choice. He was known for his goofy sense of humor, his deep empathy, and his ability to connect with others. Not many people knew of the mental health struggles that shaped most of his adult life.
+              My brother, Brian, was a writer. He loved stories and believed in their power to inspire or connect or soothe. It was his avocation rather than his occupation, though that wasn&apos;t his choice. He was known for his goofy sense of humor, his deep empathy, and his ability to connect with others. Not many people knew of the mental health struggles that shaped most of his adult life.
             </p>
             <p>
-              When he passed to suicide in 2011, he left behind a treasure trove of memories, mental snapshots, sayings, traditions … and a book. His thesis in graduate school was a novel, and for seven years, it sat in his house. Then it sat in mine for another thirteen years. I've read it several times over the years. It sounds like him. It helps me keep his memory fresh.
+              When he passed to suicide in 2011, he left behind a treasure trove of memories, mental snapshots, sayings, traditions … and a book. His thesis in graduate school was a novel, and for seven years, it sat in his house. Then it sat in mine for another thirteen years. I&apos;ve read it several times over the years. It sounds like him. It helps me keep his memory fresh.
             </p>
             <p>
               I wanted to do something meaningful to honor his memory and allow other people to enjoy his quirky style. I decided to self-publish his book and donate every penny to mental health charities.
