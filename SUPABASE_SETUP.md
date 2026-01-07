@@ -1,5 +1,42 @@
 # Supabase Setup Instructions
 
+## Database Tables Setup (REQUIRED)
+
+Before using the application, you **must** set up the database tables in Supabase. The application stores ebooks and authors in the database for persistence across all users.
+
+### Steps to Create Database Tables:
+
+1. Go to your Supabase project dashboard
+2. Navigate to **SQL Editor**
+3. Open the `supabase_migrations.sql` file from your project root
+4. Copy the entire SQL script
+5. Paste it into the SQL Editor
+6. Click **Run** to execute the script
+
+This will create:
+- `ebooks` table - Stores all ebook information
+- `authors` table - Stores author information with book counts
+- Row Level Security policies - Controls who can read/write data
+- Triggers - Automatically updates author book counts when ebooks change
+- Initial sample data - 4 ebooks and 4 authors to get started
+
+### What the Migration Does:
+
+- **Creates tables** with proper schema and indexes
+- **Enables RLS (Row Level Security)** so anyone can read, but only authenticated users can modify
+- **Auto-syncs author book counts** whenever ebooks are added/removed
+- **Inserts initial data** so you have sample ebooks to start with
+
+### After Running the Migration:
+
+The application will automatically:
+- Fetch ebooks and authors from the database on load
+- Save all admin changes to the database
+- Keep author book counts synchronized
+- Fall back to localStorage if database connection fails
+
+---
+
 ## Admin Access Configuration
 
 To restrict admin page access to specific users, you need to configure admin emails.

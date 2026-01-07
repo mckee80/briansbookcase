@@ -40,7 +40,7 @@ export default function Login() {
     <main className="min-h-screen flex items-center justify-center p-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         <h1 className="text-3xl font-bold font-garamond mb-6 text-primary text-center">
-          Login to Brian's Bookcase
+          Login to Brian&apos;s Bookcase
         </h1>
 
         {error && (
@@ -88,7 +88,7 @@ export default function Login() {
         </form>
 
         <p className="mt-4 text-center font-crimson">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/signup" className="text-accent hover:underline">
             Sign up
           </Link>

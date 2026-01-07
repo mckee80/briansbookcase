@@ -1,11 +1,17 @@
-import { mockEbooks } from '@/data/mockData';
+'use client';
+
+import { useData } from '@/contexts/DataContext';
 
 export default function Authors() {
-  // Get unique authors from ebooks
-  const authors = Array.from(new Set(mockEbooks.map(book => book.author))).map(authorName => {
-    const books = mockEbooks.filter(book => book.author === authorName);
+  const { ebooks, authors: authorsList } = useData();
+
+  // Get unique authors from ebooks with their books
+  const authors = Array.from(new Set(ebooks.map(book => book.author))).map(authorName => {
+    const books = ebooks.filter(book => book.author === authorName);
+    const authorInfo = authorsList.find(a => a.name === authorName);
     return {
       name: authorName,
+      email: authorInfo?.email || '',
       books: books,
       bookCount: books.length,
     };

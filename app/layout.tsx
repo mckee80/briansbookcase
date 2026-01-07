@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar, Footer, AuthProvider } from "@/components";
+import { DataProvider } from "@/contexts/DataContext";
 
 export const metadata: Metadata = {
   title: "Brian's Bookcase - Supporting Suicide Prevention Through Fiction",
@@ -16,9 +17,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased flex flex-col min-h-screen">
         <AuthProvider>
-          <Navbar />
-          {children}
-          <Footer />
+          <DataProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </DataProvider>
         </AuthProvider>
       </body>
     </html>

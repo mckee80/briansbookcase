@@ -19,10 +19,10 @@ export default function Home() {
                 Every story you read here supports suicide prevention. Our library features donated fiction from talented writers—100% of membership contributions fund crisis intervention services and mental health programs that save lives.
               </p>
               <p>
-                If you've struggled with mental health, or watched someone you love fight that battle, you know how much support matters. Every person helped by these charities is someone's child, friend, or relative. Use your love of stories to give someone suffering a helping hand.
+                If you&apos;ve struggled with mental health, or watched someone you love fight that battle, you know how much support matters. Every person helped by these charities is someone&apos;s child, friend, or relative. Use your love of stories to give someone suffering a helping hand.
               </p>
               <p>
-                Access our full library of donated fiction and short stories at any membership level—$0, $5, $10, or $20 monthly. The amount you give doesn't change your access; it simply reflects what you're able to contribute to the cause. New stories added every month.
+                Access our full library of donated fiction and short stories at any membership level—$0, $5, $10, or $20 monthly. The amount you give doesn&apos;t change your access; it simply reflects what you&apos;re able to contribute to the cause. New stories added every month.
               </p>
               <p className="font-bold text-primary">
                 We believe that a LARGE number of people, doing something SMALL consistently, can lead to GREAT things.

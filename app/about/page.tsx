@@ -7,10 +7,10 @@ export default function About() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold font-garamond mb-4 text-primary">
-            About Brian's Bookcase
+            About Brian&apos;s Bookcase
           </h1>
           <p className="font-crimson text-lg text-textLight">
-            Learn about our mission and the story behind Brian's Bookcase
+            Learn about our mission and the story behind Brian&apos;s Bookcase
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function About() {
             Our Mission
           </h3>
           <p className="font-crimson text-lg leading-relaxed text-primary">
-            Brian's Bookcase is a non-profit organization dedicated to supporting mental health and suicide prevention efforts. We foster community by offering donated short stories, creating a platform that entertains and inspires while empowering the critical work of mental health organizations.
+            Brian&apos;s Bookcase is a non-profit organization dedicated to supporting mental health and suicide prevention efforts. We foster community by offering donated short stories, creating a platform that entertains and inspires while empowering the critical work of mental health organizations.
           </p>
         </section>
 
