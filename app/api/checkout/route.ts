@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Mark this route as dynamic since it uses searchParams
+export const dynamic = 'force-dynamic';
+
 const MEMBERSHIP_TIERS = [
   { name: 'supporter', price: 5 },
   { name: 'advocate', price: 10 },

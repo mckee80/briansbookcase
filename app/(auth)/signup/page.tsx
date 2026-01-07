@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -12,7 +12,7 @@ const MEMBERSHIP_TIERS = [
   { name: 'Champion', price: 20 },
 ];
 
-export default function Signup() {
+function SignupForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -202,5 +202,13 @@ export default function Signup() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function Signup() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <SignupForm />
+    </Suspense>
   );
 }
