@@ -72,7 +72,10 @@ export async function extractEbookMetadata(file: File): Promise<EbookMetadata> {
     }
 
     // Extract cover image
-    metadata.coverImage = await extractCoverImage(zip);
+    const coverImage = await extractCoverImage(zip);
+    if (coverImage) {
+      metadata.coverImage = coverImage;
+    }
 
     console.log('Extracted metadata:', metadata);
     return metadata;
