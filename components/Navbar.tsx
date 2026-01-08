@@ -69,7 +69,7 @@ export default function Navbar() {
                   Login
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/membership"
                   className="px-4 py-2 bg-accent rounded hover:bg-opacity-80 transition-colors"
                 >
                   Sign Up
@@ -184,7 +184,7 @@ export default function Navbar() {
                     Login
                   </Link>
                   <Link
-                    href="/signup"
+                    href="/membership"
                     className="px-4 py-2 bg-accent rounded hover:bg-opacity-80 transition-colors inline-block text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >

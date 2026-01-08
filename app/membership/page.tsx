@@ -1,5 +1,10 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Heart, Check } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 const MEMBERSHIP_TIERS = [
   {
@@ -11,8 +16,7 @@ const MEMBERSHIP_TIERS = [
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Start Reading',
-    buttonDisabled: false,
+    buttonText: 'Choose Free',
     featured: false,
   },
   {
@@ -24,8 +28,7 @@ const MEMBERSHIP_TIERS = [
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Join at $5',
-    buttonDisabled: false,
+    buttonText: 'Choose $5/month',
     featured: false,
   },
   {
@@ -37,8 +40,7 @@ const MEMBERSHIP_TIERS = [
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Join at $10',
-    buttonDisabled: false,
+    buttonText: 'Choose $10/month',
     featured: true,
   },
   {
@@ -50,16 +52,87 @@ const MEMBERSHIP_TIERS = [
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Join at $20',
-    buttonDisabled: false,
+    buttonText: 'Choose $20/month',
     featured: false,
   },
 ];
 
 export default function Membership() {
+  const router = useRouter();
+  const [selectedTier, setSelectedTier] = useState('advocate');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleTierSelect = (tierName: string) => {
+    setSelectedTier(tierName.toLowerCase());
+    // Smooth scroll to signup form
+    document.getElementById('signup-form')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess(false);
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const tier = MEMBERSHIP_TIERS.find(t => t.name.toLowerCase() === selectedTier);
+
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+            membership_tier: tier?.name || 'Free',
+            membership_price: tier?.price || 0,
+          },
+        },
+      });
+
+      if (signupError) throw signupError;
+
+      if (data.user) {
+        setSuccess(true);
+
+        // Conditional redirect based on tier
+        setTimeout(() => {
+          if (tier?.price === 0) {
+            // Free tier - go directly to library
+            router.push('/library');
+          } else {
+            // Paid tier - redirect to Stripe Checkout
+            router.push(`/api/checkout?tier=${selectedTier}`);
+          }
+        }, 2000);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during signup');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold font-garamond mb-4 text-primary">
             Support Mental Health
@@ -75,17 +148,20 @@ export default function Membership() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        {/* Tier Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto mb-16">
           {MEMBERSHIP_TIERS.map((tier) => (
             <div
               key={tier.name}
-              className={`bg-white rounded-lg border-2 border-border shadow-lg overflow-hidden relative transition-transform hover:-translate-y-1 page-corner ${
+              className={`bg-white rounded-lg border-2 shadow-lg overflow-hidden relative transition-transform hover:-translate-y-1 page-corner ${
                 tier.featured ? 'ring-2 ring-accent md:scale-105' : ''
+              } ${
+                selectedTier === tier.name.toLowerCase() ? 'border-accent' : 'border-border'
               }`}
             >
               {tier.featured && (
                 <div className="bg-accent text-white text-center py-2 font-semibold font-crimson text-xs uppercase tracking-wide">
-                  Support Mental Health
+                  Most Popular
                 </div>
               )}
               <div className="p-10">
@@ -104,23 +180,136 @@ export default function Membership() {
                     </li>
                   ))}
                 </ul>
-                <Link href={`/signup?tier=${tier.name.toLowerCase()}`}>
-                  <button
-                    disabled={tier.buttonDisabled}
-                    className={`w-full py-3 rounded-lg font-semibold transition-colors font-crimson ${
-                      tier.featured
-                        ? 'bg-accent text-white hover:bg-primary'
-                        : tier.buttonDisabled
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed opacity-50'
-                        : 'bg-primary text-white hover:bg-gray-700'
-                    }`}
-                  >
-                    {tier.buttonText}
-                  </button>
-                </Link>
+                <button
+                  onClick={() => handleTierSelect(tier.name)}
+                  className={`w-full py-3 rounded-lg font-semibold transition-colors font-crimson ${
+                    tier.featured
+                      ? 'bg-accent text-white hover:bg-primary'
+                      : 'bg-primary text-white hover:bg-gray-700'
+                  }`}
+                >
+                  {tier.buttonText}
+                </button>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Signup Form */}
+        <div id="signup-form" className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg border-2 border-border shadow-lg p-8 relative page-corner">
+            <h2 className="text-3xl font-bold font-garamond mb-6 text-primary text-center">
+              Create Your Account
+            </h2>
+
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                Account created successfully! Redirecting...
+              </div>
+            )}
+
+            <form onSubmit={handleSignup} className="space-y-4">
+              <div>
+                <label htmlFor="tier" className="block font-crimson mb-2 font-semibold text-primary">
+                  Selected Tier
+                </label>
+                <select
+                  id="tier"
+                  value={selectedTier}
+                  onChange={(e) => setSelectedTier(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent font-crimson"
+                >
+                  {MEMBERSHIP_TIERS.map((tier) => (
+                    <option key={tier.name} value={tier.name.toLowerCase()}>
+                      {tier.name} - ${tier.price}/month
+                    </option>
+                  ))}
+                </select>
+                <p className="text-sm text-gray-600 mt-2 font-crimson">
+                  All tiers have the same access. Choose what you can afford to support mental health.
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="name" className="block font-crimson mb-2 font-semibold text-primary">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block font-crimson mb-2 font-semibold text-primary">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block font-crimson mb-2 font-semibold text-primary">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block font-crimson mb-2 font-semibold text-primary">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-accent text-white py-3 rounded-lg hover:bg-primary transition-colors disabled:opacity-50 font-semibold font-crimson text-lg"
+              >
+                {loading ? 'Creating account...' : 'Create Account & Join'}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center font-crimson text-gray-600">
+              Already have an account?{' '}
+              <Link href="/login" className="text-accent hover:underline font-semibold">
+                Login
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </main>
