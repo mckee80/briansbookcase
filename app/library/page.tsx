@@ -23,7 +23,7 @@ export default function Library() {
           Our Library
         </h1>
         <p className="font-crimson text-lg mb-8 text-gray-700">
-          Browse our collection of donated fiction ebooks. All proceeds support suicide prevention initiatives.
+          Browse our collection of donated stories. All proceeds support suicide prevention initiatives.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -81,7 +81,7 @@ export default function Library() {
         {ebooks.length === 0 && (
           <div className="text-center py-16">
             <p className="font-crimson text-xl text-gray-600">
-              No ebooks available yet. Check back soon!
+              No stories available yet. Check back soon!
             </p>
           </div>
         )}
