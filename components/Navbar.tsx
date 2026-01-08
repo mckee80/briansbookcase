@@ -33,9 +33,6 @@ export default function Navbar() {
             <Link href="/shop" className="hover:text-accent transition-colors">
               Shop
             </Link>
-            <Link href="/membership" className="hover:text-accent transition-colors">
-              Join Us!
-            </Link>
             <Link href="/about" className="hover:text-accent transition-colors">
               About
             </Link>
@@ -68,6 +65,13 @@ export default function Navbar() {
                 Login
               </Link>
             )}
+
+            <Link
+              href="/membership"
+              className="px-6 py-2 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold"
+            >
+              Join Us!
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -120,13 +124,6 @@ export default function Navbar() {
                 Shop
               </Link>
               <Link
-                href="/membership"
-                className="hover:text-accent transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Join Us!
-              </Link>
-              <Link
                 href="/about"
                 className="hover:text-accent transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
@@ -175,6 +172,14 @@ export default function Navbar() {
                   Login
                 </Link>
               )}
+
+              <Link
+                href="/membership"
+                className="px-6 py-3 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold text-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Join Us!
+              </Link>
             </div>
           </div>
         )}
