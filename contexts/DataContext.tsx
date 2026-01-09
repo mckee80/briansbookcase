@@ -345,13 +345,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const addAuthor = async (author: Omit<Author, 'id' | 'booksCount'>) => {
     try {
+      // First, count how many ebooks this author already has
+      const { count, error: countError } = await supabase
+        .from('ebooks')
+        .select('*', { count: 'exact', head: true })
+        .eq('author', author.name);
+
+      if (countError) throw countError;
+
+      const initialBookCount = count || 0;
+
+      // Insert the author with the correct initial book count
       const { data, error } = await supabase
         .from('authors')
         .insert([
           {
             name: author.name,
             email: author.email || null,
-            books_count: 0,
+            books_count: initialBookCount,
           },
         ])
         .select()
