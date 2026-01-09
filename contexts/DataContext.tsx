@@ -345,16 +345,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const addAuthor = async (author: Omit<Author, 'id' | 'booksCount'>) => {
     try {
-      // Debug: Check all ebooks with this author name
-      const { data: matchingEbooks, error: debugError } = await supabase
-        .from('ebooks')
-        .select('id, title, author')
-        .eq('author', author.name);
-
-      console.log(`Debug: Looking for ebooks by "${author.name}"`);
-      console.log('Matching ebooks:', matchingEbooks);
-
-      // First, count how many ebooks this author already has
+      // Count how many ebooks this author already has
       const { count, error: countError } = await supabase
         .from('ebooks')
         .select('*', { count: 'exact', head: true })
@@ -363,8 +354,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (countError) throw countError;
 
       const initialBookCount = count || 0;
-
-      console.log(`Adding author "${author.name}" with initial book count: ${initialBookCount}`);
 
       // Insert the author with the correct initial book count
       const { data, error } = await supabase
@@ -382,7 +371,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data) {
-        console.log('Author added successfully:', data);
         // Refresh data to ensure consistency
         await refreshData();
       }
