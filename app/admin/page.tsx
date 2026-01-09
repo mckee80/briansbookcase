@@ -165,7 +165,7 @@ export default function AdminPage() {
           value: Number(row.count),
           color: tierColors[row.tier] || '#6B7280',
         }))
-        .filter(item => item.value > 0); // Only include tiers with users
+        .filter((item: { name: string; value: number; color: string }) => item.value > 0); // Only include tiers with users
 
       setMembershipData(chartData);
     } catch (error) {
