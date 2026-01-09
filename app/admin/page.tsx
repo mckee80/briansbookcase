@@ -111,7 +111,7 @@ export default function AdminPage() {
 
   // Author management
   const handleAddAuthor = async () => {
-    if (newAuthor.name && newAuthor.email) {
+    if (newAuthor.name) {
       try {
         await addAuthor(newAuthor);
         setNewAuthor({ name: '', email: '' });
@@ -120,6 +120,8 @@ export default function AdminPage() {
         alert('Failed to add author. Please try again.');
         console.error(error);
       }
+    } else {
+      alert('Please enter an author name.');
     }
   };
 
@@ -363,7 +365,7 @@ export default function AdminPage() {
                         />
                         <input
                           type="email"
-                          placeholder="Email Address"
+                          placeholder="Email Address (Optional)"
                           value={newAuthor.email}
                           onChange={(e) => setNewAuthor({ ...newAuthor, email: e.target.value })}
                           className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"

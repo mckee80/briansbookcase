@@ -360,7 +360,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data) {
-        setAuthors([...authors, mapDbToAuthor(data)]);
+        // Refresh data to ensure consistency
+        await refreshData();
       }
     } catch (error) {
       console.error('Error adding author:', error);
