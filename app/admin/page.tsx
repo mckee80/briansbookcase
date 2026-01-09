@@ -1,24 +1,42 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminRoute, useAuth } from '@/components';
 import { useData } from '@/contexts/DataContext';
 import { extractEbookMetadata } from '@/lib/extractEbookCover';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Book, Users, Trash2, Plus, PieChartIcon } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
-// Mock membership tier data - in production, this would come from database
-const membershipData = [
-  { name: 'Free', value: 45, color: '#6B7280' },
-  { name: 'Supporter ($5)', value: 30, color: '#8B4513' },
-  { name: 'Advocate ($10)', value: 20, color: '#D4A574' },
-  { name: 'Champion ($20)', value: 5, color: '#2C1810' },
-];
+// Create Supabase client for admin operations
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Color mapping for membership tiers
+const tierColors: Record<string, string> = {
+  'free': '#6B7280',
+  'supporter': '#8B4513',
+  'advocate': '#D4A574',
+  'champion': '#2C1810',
+};
+
+// Tier display names with prices
+const tierNames: Record<string, string> = {
+  'free': 'Free',
+  'supporter': 'Supporter ($5)',
+  'advocate': 'Advocate ($10)',
+  'champion': 'Champion ($20)',
+};
 
 export default function AdminPage() {
   const { user } = useAuth();
   const { ebooks, authors, addEbook, removeEbook, addAuthor, removeAuthor } = useData();
   const [activeTab, setActiveTab] = useState<'ebooks' | 'authors' | 'analytics'>('ebooks');
+
+  // Membership data state
+  const [membershipData, setMembershipData] = useState<Array<{ name: string; value: number; color: string }>>([]);
+  const [loadingMembership, setLoadingMembership] = useState(false);
 
   // Ebook state
   const [newEbook, setNewEbook] = useState({
@@ -124,6 +142,47 @@ export default function AdminPage() {
       alert('Please enter an author name.');
     }
   };
+
+  // Fetch real membership data from Supabase
+  const fetchMembershipData = async () => {
+    setLoadingMembership(true);
+    try {
+      // Call the RPC function to get membership statistics
+      const { data, error } = await supabase.rpc('get_membership_stats');
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        // No users yet
+        setMembershipData([]);
+        return;
+      }
+
+      // Convert database results to chart format
+      const chartData = data
+        .map((row: { tier: string; count: number }) => ({
+          name: tierNames[row.tier] || row.tier,
+          value: Number(row.count),
+          color: tierColors[row.tier] || '#6B7280',
+        }))
+        .filter(item => item.value > 0); // Only include tiers with users
+
+      setMembershipData(chartData);
+    } catch (error) {
+      console.error('Error fetching membership data:', error);
+      // Set empty data if fetch fails
+      setMembershipData([]);
+    } finally {
+      setLoadingMembership(false);
+    }
+  };
+
+  // Fetch membership data when analytics tab is opened
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      fetchMembershipData();
+    }
+  }, [activeTab]);
 
   const handleRemoveAuthor = async (id: number) => {
     const author = authors.find(a => a.id === id);
@@ -413,32 +472,45 @@ export default function AdminPage() {
                     Membership Tier Distribution
                   </h2>
 
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {/* Pie Chart */}
-                    <div className="bg-white border border-border rounded-lg p-6">
-                      <h3 className="text-xl font-bold font-garamond text-primary mb-4 text-center">
-                        Member Distribution
-                      </h3>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={membershipData}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
-                            outerRadius={100}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {membershipData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
+                  {loadingMembership ? (
+                    <div className="text-center py-16">
+                      <p className="font-crimson text-xl text-gray-600">
+                        Loading membership data...
+                      </p>
                     </div>
+                  ) : membershipData.length === 0 ? (
+                    <div className="text-center py-16">
+                      <p className="font-crimson text-xl text-gray-600">
+                        No membership data available yet.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {/* Pie Chart */}
+                      <div className="bg-white border border-border rounded-lg p-6">
+                        <h3 className="text-xl font-bold font-garamond text-primary mb-4 text-center">
+                          Member Distribution
+                        </h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <PieChart>
+                            <Pie
+                              data={membershipData}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
+                              outerRadius={100}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {membershipData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
 
                     {/* Statistics */}
                     <div className="space-y-4">
@@ -494,7 +566,8 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

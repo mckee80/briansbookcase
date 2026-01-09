@@ -121,3 +121,56 @@ $$;
 ### Fallback:
 
 If the function doesn't exist or fails, the application will gracefully fall back to just signing out the user without deleting their data.
+
+---
+
+## Membership Analytics Function
+
+To enable the membership analytics feature in the admin dashboard, you need to create a database function that can query user metadata.
+
+### Steps:
+
+1. Go to your Supabase project dashboard
+2. Navigate to **SQL Editor**
+3. Create a new query and paste the following SQL:
+
+```sql
+-- Function to get membership tier distribution
+CREATE OR REPLACE FUNCTION get_membership_stats()
+RETURNS TABLE (
+  tier TEXT,
+  count BIGINT
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    COALESCE(
+      (auth.users.raw_user_meta_data->>'membership_tier')::TEXT,
+      'free'
+    ) as tier,
+    COUNT(*) as count
+  FROM auth.users
+  GROUP BY tier
+  ORDER BY tier;
+END;
+$$;
+```
+
+4. Run the query to create the function
+5. The admin dashboard will now show real membership data when you click on the Analytics tab
+
+### How it works:
+
+- The function queries the `auth.users` table to get all users
+- It extracts the `membership_tier` from each user's metadata
+- It groups and counts users by tier
+- Defaults to 'free' for users without a tier specified
+- The admin page calls this function and displays the results in a pie chart
+
+### Security:
+
+- The function uses `SECURITY DEFINER` which allows it to access auth.users with elevated privileges
+- Only authenticated admin users should be able to call this function through your app logic

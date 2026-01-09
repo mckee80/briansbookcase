@@ -213,3 +213,28 @@ CREATE TRIGGER sync_author_count_on_ebook_change
   AFTER INSERT OR UPDATE OR DELETE ON public.ebooks
   FOR EACH STATEMENT
   EXECUTE FUNCTION sync_author_book_count();
+
+-- =============================================
+-- FUNCTION: Get membership tier statistics
+-- =============================================
+CREATE OR REPLACE FUNCTION get_membership_stats()
+RETURNS TABLE (
+  tier TEXT,
+  count BIGINT
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    COALESCE(
+      (auth.users.raw_user_meta_data->>'membership_tier')::TEXT,
+      'free'
+    ) as tier,
+    COUNT(*) as count
+  FROM auth.users
+  GROUP BY tier
+  ORDER BY tier;
+END;
+$$;
