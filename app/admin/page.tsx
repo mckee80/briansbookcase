@@ -35,7 +35,7 @@ export default function AdminPage() {
   const [uploading, setUploading] = useState(false);
 
   // Author state
-  const [newAuthor, setNewAuthor] = useState({ name: '', email: '' });
+  const [newAuthor, setNewAuthor] = useState({ name: '' });
   const [showAddAuthor, setShowAddAuthor] = useState(false);
 
   // Handle ebook file selection and metadata extraction
@@ -111,10 +111,10 @@ export default function AdminPage() {
 
   // Author management
   const handleAddAuthor = async () => {
-    if (newAuthor.name) {
+    if (newAuthor.name.trim()) {
       try {
-        await addAuthor(newAuthor);
-        setNewAuthor({ name: '', email: '' });
+        await addAuthor({ name: newAuthor.name.trim(), email: '' });
+        setNewAuthor({ name: '' });
         setShowAddAuthor(false);
       } catch (error) {
         alert('Failed to add author. Please try again.');
@@ -355,20 +355,13 @@ export default function AdminPage() {
                   {showAddAuthor && (
                     <div className="bg-parchment border-2 border-accent rounded-lg p-6 mb-6">
                       <h3 className="text-xl font-bold font-garamond mb-4 text-primary">Add New Author</h3>
-                      <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="mb-4">
                         <input
                           type="text"
                           placeholder="Author Name"
                           value={newAuthor.name}
-                          onChange={(e) => setNewAuthor({ ...newAuthor, name: e.target.value })}
-                          className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
-                        />
-                        <input
-                          type="email"
-                          placeholder="Email Address (Optional)"
-                          value={newAuthor.email}
-                          onChange={(e) => setNewAuthor({ ...newAuthor, email: e.target.value })}
-                          className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                          onChange={(e) => setNewAuthor({ name: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                         />
                       </div>
                       <div className="flex gap-4">
@@ -397,7 +390,7 @@ export default function AdminPage() {
                         <div>
                           <h3 className="font-bold font-garamond text-lg text-primary">{author.name}</h3>
                           <p className="font-crimson text-gray-600">
-                            {author.email} • {author.booksCount} book(s)
+                            {author.booksCount} book(s)
                           </p>
                         </div>
                         <button
