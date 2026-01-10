@@ -118,8 +118,8 @@ export default function SendToDeviceModal({
           <>
             <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="font-crimson text-sm text-gray-700 leading-relaxed">
-                <strong>How it works:</strong> We'll email <strong>{ebookTitle}</strong> directly to your device.
-                You can use your Kindle email (e.g., <em>yourname@kindle.com</em>), your phone's email,
+                <strong>How it works:</strong> We&apos;ll email <strong>{ebookTitle}</strong> directly to your device.
+                You can use your Kindle email (e.g., <em>yourname@kindle.com</em>), your phone&apos;s email,
                 or any email address where you want to receive the ebook.
               </p>
             </div>
