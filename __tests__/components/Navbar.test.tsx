@@ -32,11 +32,11 @@ describe('Navbar Component', () => {
     expect(screen.getByText('Authors')).toBeInTheDocument();
   });
 
-  it('shows login and signup buttons when user is not authenticated', () => {
+  it('shows login and join buttons when user is not authenticated', () => {
     render(<Navbar />);
 
     expect(screen.getByText('Login')).toBeInTheDocument();
-    expect(screen.getByText('Sign Up')).toBeInTheDocument();
+    expect(screen.getByText('Join Us!')).toBeInTheDocument();
   });
 
   it('shows account and sign out buttons when user is authenticated', () => {

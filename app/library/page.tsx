@@ -1,19 +1,63 @@
 'use client';
 
 import { useData } from '@/contexts/DataContext';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Download } from 'lucide-react';
+import { Download, Send } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+import SendToDeviceModal from '@/components/SendToDeviceModal';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function Library() {
   const { ebooks } = useData();
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEbook, setSelectedEbook] = useState<typeof ebooks[0] | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    action();
+  };
 
   const handleDownload = (ebook: typeof ebooks[0]) => {
-    if (ebook.downloadUrl) {
-      // Open download URL in new tab
-      window.open(ebook.downloadUrl, '_blank');
-    } else {
-      alert('Download not available for this ebook.');
-    }
+    requireAuth(() => {
+      if (ebook.downloadUrl) {
+        window.open(ebook.downloadUrl, '_blank');
+      } else {
+        alert('Download not available for this ebook.');
+      }
+    });
+  };
+
+  const handleSendToDevice = (ebook: typeof ebooks[0]) => {
+    requireAuth(() => {
+      setSelectedEbook(ebook);
+      setModalOpen(true);
+    });
   };
 
   return (
@@ -60,17 +104,27 @@ export default function Library() {
                     {ebook.description}
                   </p>
                 )}
-                <div className="flex justify-between items-center">
+                <div className="mb-3">
                   <span className="text-xs text-gray-500 font-crimson">
                     {ebook.genre} • {ebook.year}
                   </span>
+                </div>
+                <div className="flex gap-2">
                   <button
                     onClick={() => handleDownload(ebook)}
                     disabled={!ebook.downloadUrl}
-                    className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded hover:bg-primary transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-accent text-white rounded hover:bg-primary transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Download size={16} />
                     Download
+                  </button>
+                  <button
+                    onClick={() => handleSendToDevice(ebook)}
+                    disabled={!ebook.downloadUrl}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border-2 border-accent text-accent rounded hover:bg-accent hover:text-white transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Send size={16} />
+                    Send
                   </button>
                 </div>
               </div>
@@ -86,6 +140,16 @@ export default function Library() {
           </div>
         )}
       </div>
+
+      {selectedEbook && (
+        <SendToDeviceModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          ebookId={selectedEbook.id}
+          ebookTitle={selectedEbook.title}
+          userId={user?.id || ''}
+        />
+      )}
     </main>
   );
 }
