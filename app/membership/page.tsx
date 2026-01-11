@@ -61,7 +61,6 @@ const MEMBERSHIP_TIERS = [
 export default function Membership() {
   const router = useRouter();
   const [selectedTier, setSelectedTier] = useState('advocate');
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -102,7 +101,6 @@ export default function Membership() {
         password,
         options: {
           data: {
-            full_name: name,
             membership_tier: tier?.name || 'Free',
             membership_price: tier?.price || 0,
           },
@@ -232,20 +230,6 @@ export default function Membership() {
                 <p className="text-sm text-gray-600 mt-2 font-crimson">
                   All tiers have the same access. Choose what you can afford to support mental health.
                 </p>
-              </div>
-
-              <div>
-                <label htmlFor="name" className="block font-crimson mb-2 font-semibold text-primary">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
-                />
               </div>
 
               <div>
