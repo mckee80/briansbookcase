@@ -4,8 +4,8 @@ import { Navbar, Footer, AuthProvider } from "@/components";
 import { DataProvider } from "@/contexts/DataContext";
 
 export const metadata: Metadata = {
-  title: "Brian's Bookcase - Supporting Suicide Prevention Through Fiction",
-  description: "A charity website dedicated to suicide prevention, offering donated fiction ebooks to support mental health awareness and resources.",
+  title: "Brian's Bookcase - Supporting Mental Health Through Stories",
+  description: "A charity website dedicated to mental health, offering donated fiction stories to support suicide prevention and mental health resources.",
 };
 
 export default function RootLayout({

@@ -49,9 +49,9 @@ export default function Home() {
             <div className="w-20 h-20 bg-accent text-white rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-6 hover:rotate-0 transition-transform">
               <Book size={40} />
             </div>
-            <h3 className="text-2xl font-bold font-garamond mb-3">Unlimited Ebooks</h3>
+            <h3 className="text-2xl font-bold font-garamond mb-3">Unlimited Stories</h3>
             <p className="font-crimson text-gray-700">
-              Members get full access to our curated library of digital books on various topics
+              Members get full access to our curated library of stories
             </p>
           </div>
 
