@@ -116,12 +116,27 @@ export default function SendToDeviceModal({
           </div>
         ) : (
           <>
-            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="font-crimson text-sm text-gray-700 leading-relaxed">
                 <strong>How it works:</strong> We&apos;ll email <strong>{ebookTitle}</strong> directly to your device.
                 You can use your Kindle email (e.g., <em>yourname@kindle.com</em>), your phone&apos;s email,
                 or any email address where you want to receive the ebook.
               </p>
+            </div>
+
+            <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-300">
+              <p className="font-crimson text-sm text-gray-800 leading-relaxed mb-2">
+                <strong>📖 Kindle Users:</strong> To receive ebooks on your Kindle, you must add{' '}
+                <strong className="text-primary">library@mail.briansbookcase.org</strong> to your approved personal document email list.
+              </p>
+              <a
+                href="https://www.amazon.com/gp/help/customer/display.html?nodeId=GX9XLEVV8G4DB28H"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-crimson text-sm text-accent hover:text-primary underline"
+              >
+                Click here for instructions on adding approved emails →
+              </a>
             </div>
 
             <form onSubmit={handleSubmit}>
