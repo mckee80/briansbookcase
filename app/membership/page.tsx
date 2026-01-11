@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Heart, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import EmailVerificationModal from '@/components/EmailVerificationModal';
 
 const MEMBERSHIP_TIERS = [
   {
@@ -67,6 +68,8 @@ export default function Membership() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [signupEmail, setSignupEmail] = useState('');
 
   const handleTierSelect = (tierName: string) => {
     setSelectedTier(tierName.toLowerCase());
@@ -109,18 +112,13 @@ export default function Membership() {
       if (signupError) throw signupError;
 
       if (data.user) {
+        // Store email for modal and show verification modal
+        setSignupEmail(email);
+        setShowEmailModal(true);
         setSuccess(true);
 
-        // Conditional redirect based on tier
-        setTimeout(() => {
-          if (tier?.price === 0) {
-            // Free tier - go directly to library
-            router.push('/library');
-          } else {
-            // Paid tier - redirect to Stripe Checkout
-            router.push(`/api/checkout?tier=${selectedTier}`);
-          }
-        }, 2000);
+        // Note: User will need to verify email before they can access the library
+        // The redirect logic is removed - they'll need to verify and then log in
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during signup');
@@ -312,6 +310,16 @@ export default function Membership() {
           </div>
         </div>
       </div>
+
+      {/* Email Verification Modal */}
+      <EmailVerificationModal
+        isOpen={showEmailModal}
+        onClose={() => {
+          setShowEmailModal(false);
+          router.push('/login');
+        }}
+        email={signupEmail}
+      />
     </main>
   );
 }

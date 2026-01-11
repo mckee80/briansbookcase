@@ -82,14 +82,6 @@ export default function Authors() {
                   <span className="text-accent mr-2">✓</span>
                   Featured author profile
                 </li>
-                <li className="flex items-start">
-                  <span className="text-accent mr-2">✓</span>
-                  Tax-deductible donation
-                </li>
-                <li className="flex items-start">
-                  <span className="text-accent mr-2">✓</span>
-                  Join exclusive author community
-                </li>
               </ul>
             </div>
           </div>
