@@ -19,9 +19,31 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="text-lg font-bold font-garamond mb-4">Support</h3>
-            <p className="font-crimson text-sm">
+            <p className="font-crimson text-sm mb-3">
               If you or someone you know is struggling, please reach out for help.
             </p>
+            <ul className="space-y-2 font-crimson text-sm">
+              <li>
+                <a
+                  href="https://988lifeline.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition-colors font-semibold"
+                >
+                  988 Suicide & Crisis Lifeline →
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.crisistextline.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition-colors"
+                >
+                  Crisis Text Line: Text HOME to 741741
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-accent text-center font-crimson text-sm">

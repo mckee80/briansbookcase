@@ -81,7 +81,7 @@ export default function Library() {
                   <img
                     src={ebook.coverImage}
                     alt={`Cover of ${ebook.title}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
