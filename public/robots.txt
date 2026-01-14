@@ -1,0 +1,12 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow authentication pages (they redirect)
+Disallow: /login
+Disallow: /signup
+Disallow: /account
+Disallow: /admin
+
+# Sitemap location
+Sitemap: https://briansbookcase.org/sitemap.xml
