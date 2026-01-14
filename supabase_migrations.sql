@@ -67,6 +67,8 @@ CREATE TABLE public.authors (
   id BIGSERIAL PRIMARY KEY,
   name TEXT UNIQUE NOT NULL,
   email TEXT,
+  bio TEXT,
+  photo_url TEXT,
   books_count INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

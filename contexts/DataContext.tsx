@@ -31,6 +31,8 @@ export interface Author {
   id: number;
   name: string;
   email: string;
+  bio?: string;
+  photoUrl?: string;
   booksCount: number;
 }
 
@@ -41,6 +43,7 @@ interface DataContextType {
   addEbook: (ebook: Omit<Ebook, 'id'>, file?: File, coverImage?: File) => Promise<void>;
   removeEbook: (id: number) => Promise<void>;
   addAuthor: (author: Omit<Author, 'id' | 'booksCount'>) => Promise<void>;
+  updateAuthor: (id: number, updates: Partial<Omit<Author, 'id' | 'booksCount'>>, photoFile?: File) => Promise<void>;
   removeAuthor: (id: number) => Promise<boolean>;
   refreshData: () => Promise<void>;
 }
@@ -123,6 +126,8 @@ function mapDbToAuthor(row: any): Author {
     id: row.id,
     name: row.name,
     email: row.email || '',
+    bio: row.bio || undefined,
+    photoUrl: row.photo_url || undefined,
     booksCount: row.books_count || 0,
   };
 }
@@ -387,6 +392,51 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateAuthor = async (id: number, updates: Partial<Omit<Author, 'id' | 'booksCount'>>, photoFile?: File) => {
+    try {
+      let photoUrl = updates.photoUrl;
+
+      // Upload photo if provided
+      if (photoFile) {
+        const fileExt = photoFile.name.split('.').pop();
+        const fileName = `author-${id}-${Date.now()}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError} = await supabase.storage
+          .from('ebooks')
+          .upload(fileName, photoFile, {
+            cacheControl: '3600',
+            upsert: true,
+          });
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL for the photo
+        const { data: urlData } = supabase.storage
+          .from('ebooks')
+          .getPublicUrl(fileName);
+
+        photoUrl = urlData.publicUrl;
+      }
+
+      const { error } = await supabase
+        .from('authors')
+        .update({
+          email: updates.email !== undefined ? updates.email : undefined,
+          bio: updates.bio !== undefined ? updates.bio : undefined,
+          photo_url: photoUrl !== undefined ? photoUrl : undefined,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Refresh data to ensure consistency
+      await refreshData();
+    } catch (error) {
+      console.error('Error updating author:', error);
+      throw error;
+    }
+  };
+
   const removeAuthor = async (id: number): Promise<boolean> => {
     try {
       const author = authors.find(a => a.id === id);
@@ -424,6 +474,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         addEbook,
         removeEbook,
         addAuthor,
+        updateAuthor,
         removeAuthor,
         refreshData,
       }}

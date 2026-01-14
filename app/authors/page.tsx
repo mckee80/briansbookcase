@@ -12,6 +12,8 @@ export default function Authors() {
     return {
       name: authorName,
       email: authorInfo?.email || '',
+      bio: authorInfo?.bio || '',
+      photoUrl: authorInfo?.photoUrl || '',
       books: books,
       bookCount: books.length,
     };
@@ -32,10 +34,18 @@ export default function Authors() {
           {authors.map((author) => (
             <div key={author.name} className="bg-white rounded-lg border-2 border-border shadow-md p-6 hover:shadow-xl hover:-translate-y-1 transition-all relative page-corner">
               <div className="flex items-start mb-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-3xl font-bold text-accent mr-4">
-                  {author.name.charAt(0)}
-                </div>
-                <div>
+                {author.photoUrl ? (
+                  <img
+                    src={author.photoUrl}
+                    alt={author.name}
+                    className="w-20 h-20 rounded-full object-cover mr-4 border-2 border-accent/30"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-3xl font-bold text-accent mr-4">
+                    {author.name.charAt(0)}
+                  </div>
+                )}
+                <div className="flex-1">
                   <h2 className="text-2xl font-bold font-garamond text-primary mb-1">
                     {author.name}
                   </h2>
@@ -44,6 +54,12 @@ export default function Authors() {
                   </p>
                 </div>
               </div>
+
+              {author.bio && (
+                <p className="font-crimson text-gray-700 mb-4 italic border-l-2 border-accent/30 pl-4">
+                  {author.bio}
+                </p>
+              )}
 
               <div className="space-y-3">
                 <h3 className="font-bold font-baskerville text-accent mb-2">Contributed Works:</h3>

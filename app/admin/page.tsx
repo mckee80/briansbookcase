@@ -31,7 +31,7 @@ const tierNames: Record<string, string> = {
 
 export default function AdminPage() {
   const { user } = useAuth();
-  const { ebooks, authors, addEbook, removeEbook, addAuthor, removeAuthor } = useData();
+  const { ebooks, authors, addEbook, removeEbook, addAuthor, updateAuthor, removeAuthor } = useData();
   const [activeTab, setActiveTab] = useState<'ebooks' | 'authors' | 'analytics'>('ebooks');
 
   // Membership data state
@@ -53,8 +53,11 @@ export default function AdminPage() {
   const [uploading, setUploading] = useState(false);
 
   // Author state
-  const [newAuthor, setNewAuthor] = useState({ name: '' });
+  const [newAuthor, setNewAuthor] = useState({ name: '', bio: '', email: '' });
   const [showAddAuthor, setShowAddAuthor] = useState(false);
+  const [authorPhotoFile, setAuthorPhotoFile] = useState<File | null>(null);
+  const [editingAuthor, setEditingAuthor] = useState<number | null>(null);
+  const [editAuthorData, setEditAuthorData] = useState({ bio: '', email: '', photoUrl: '' });
 
   // Handle ebook file selection and metadata extraction
   const handleEbookFileChange = async (file: File | null) => {
@@ -131,8 +134,22 @@ export default function AdminPage() {
   const handleAddAuthor = async () => {
     if (newAuthor.name.trim()) {
       try {
-        await addAuthor({ name: newAuthor.name.trim(), email: '' });
-        setNewAuthor({ name: '' });
+        await addAuthor({
+          name: newAuthor.name.trim(),
+          email: newAuthor.email || '',
+          bio: newAuthor.bio || undefined
+        });
+
+        // If a photo was uploaded, update the author with the photo
+        if (authorPhotoFile) {
+          const addedAuthor = authors.find(a => a.name === newAuthor.name.trim());
+          if (addedAuthor) {
+            await updateAuthor(addedAuthor.id, {}, authorPhotoFile);
+          }
+        }
+
+        setNewAuthor({ name: '', bio: '', email: '' });
+        setAuthorPhotoFile(null);
         setShowAddAuthor(false);
       } catch (error) {
         alert('Failed to add author. Please try again.');
@@ -140,6 +157,22 @@ export default function AdminPage() {
       }
     } else {
       alert('Please enter an author name.');
+    }
+  };
+
+  const handleUpdateAuthor = async (authorId: number) => {
+    try {
+      await updateAuthor(authorId, {
+        bio: editAuthorData.bio || undefined,
+        email: editAuthorData.email || undefined,
+      }, authorPhotoFile || undefined);
+
+      setEditingAuthor(null);
+      setEditAuthorData({ bio: '', email: '', photoUrl: '' });
+      setAuthorPhotoFile(null);
+    } catch (error) {
+      alert('Failed to update author. Please try again.');
+      console.error(error);
     }
   };
 
@@ -414,14 +447,46 @@ export default function AdminPage() {
                   {showAddAuthor && (
                     <div className="bg-parchment border-2 border-accent rounded-lg p-6 mb-6">
                       <h3 className="text-xl font-bold font-garamond mb-4 text-primary">Add New Author</h3>
-                      <div className="mb-4">
+                      <div className="grid grid-cols-2 gap-4 mb-4">
                         <input
                           type="text"
-                          placeholder="Author Name"
+                          placeholder="Author Name *"
                           value={newAuthor.name}
-                          onChange={(e) => setNewAuthor({ name: e.target.value })}
+                          onChange={(e) => setNewAuthor({ ...newAuthor, name: e.target.value })}
+                          className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                        <input
+                          type="email"
+                          placeholder="Email (optional)"
+                          value={newAuthor.email}
+                          onChange={(e) => setNewAuthor({ ...newAuthor, email: e.target.value })}
+                          className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <textarea
+                          placeholder="Bio (optional)"
+                          value={newAuthor.bio}
+                          onChange={(e) => setNewAuthor({ ...newAuthor, bio: e.target.value })}
+                          rows={3}
                           className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                         />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-semibold font-crimson text-primary mb-2">
+                          Author Photo (optional)
+                        </label>
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png,.webp"
+                          onChange={(e) => setAuthorPhotoFile(e.target.files?.[0] || null)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                        {authorPhotoFile && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            Selected: {authorPhotoFile.name}
+                          </p>
+                        )}
                       </div>
                       <div className="flex gap-4">
                         <button
@@ -431,7 +496,11 @@ export default function AdminPage() {
                           Save Author
                         </button>
                         <button
-                          onClick={() => setShowAddAuthor(false)}
+                          onClick={() => {
+                            setShowAddAuthor(false);
+                            setNewAuthor({ name: '', bio: '', email: '' });
+                            setAuthorPhotoFile(null);
+                          }}
                           className="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
                         >
                           Cancel
@@ -444,21 +513,106 @@ export default function AdminPage() {
                     {authors.map((author) => (
                       <div
                         key={author.id}
-                        className="flex items-center justify-between bg-white border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
+                        className="bg-white border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
                       >
-                        <div>
-                          <h3 className="font-bold font-garamond text-lg text-primary">{author.name}</h3>
-                          <p className="font-crimson text-gray-600">
-                            {author.booksCount} book(s)
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => handleRemoveAuthor(author.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                          title="Remove author"
-                        >
-                          <Trash2 size={20} />
-                        </button>
+                        {editingAuthor === author.id ? (
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-4">
+                              <input
+                                type="email"
+                                placeholder="Email"
+                                value={editAuthorData.email}
+                                onChange={(e) => setEditAuthorData({ ...editAuthorData, email: e.target.value })}
+                                className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                              />
+                            </div>
+                            <textarea
+                              placeholder="Bio"
+                              value={editAuthorData.bio}
+                              onChange={(e) => setEditAuthorData({ ...editAuthorData, bio: e.target.value })}
+                              rows={3}
+                              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                            />
+                            <div>
+                              <label className="block text-sm font-semibold font-crimson text-primary mb-2">
+                                Update Photo
+                              </label>
+                              <input
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.webp"
+                                onChange={(e) => setAuthorPhotoFile(e.target.files?.[0] || null)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleUpdateAuthor(author.id)}
+                                className="px-4 py-2 bg-accent text-white rounded hover:bg-primary transition-colors text-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingAuthor(null);
+                                  setEditAuthorData({ bio: '', email: '', photoUrl: '' });
+                                  setAuthorPhotoFile(null);
+                                }}
+                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors text-sm"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3 flex-1">
+                              {author.photoUrl ? (
+                                <img
+                                  src={author.photoUrl}
+                                  alt={author.name}
+                                  className="w-12 h-12 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-xl font-bold text-accent">
+                                  {author.name.charAt(0)}
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <h3 className="font-bold font-garamond text-lg text-primary">{author.name}</h3>
+                                <p className="font-crimson text-gray-600 text-sm">
+                                  {author.booksCount} book(s) • {author.email || 'No email'}
+                                </p>
+                                {author.bio && (
+                                  <p className="font-crimson text-gray-700 text-sm mt-1 italic">
+                                    {author.bio}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditingAuthor(author.id);
+                                  setEditAuthorData({
+                                    bio: author.bio || '',
+                                    email: author.email || '',
+                                    photoUrl: author.photoUrl || '',
+                                  });
+                                }}
+                                className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleRemoveAuthor(author.id)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                title="Remove author"
+                              >
+                                <Trash2 size={20} />
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
