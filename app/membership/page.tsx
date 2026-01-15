@@ -191,6 +191,15 @@ export default function Membership() {
           ))}
         </div>
 
+        {/* Why Monthly Donations */}
+        <div className="max-w-3xl mx-auto mb-12 bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+          <p className="font-crimson text-primary text-center leading-relaxed">
+            We ask for monthly donations because consistent support from many people, even in small amounts,
+            is more sustainable than occasional larger gifts. Your monthly contribution joins with others to
+            create reliable funding for mental health and suicide prevention charities.
+          </p>
+        </div>
+
         {/* Signup Form */}
         <div id="signup-form" className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg border-2 border-border shadow-lg p-8 relative page-corner">
