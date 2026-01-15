@@ -185,21 +185,10 @@ export default function Membership() {
                 </h2>
                 <div className="mb-8">
                   {tier.name === 'Custom' ? (
-                    <div className="flex items-baseline">
-                      <span className="text-2xl font-bold text-primary font-garamond mr-2">$</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="1"
-                        value={selectedTier === 'custom' ? customAmount : ''}
-                        onChange={(e) => {
-                          setCustomAmount(e.target.value);
-                          setSelectedTier('custom');
-                        }}
-                        placeholder="0"
-                        className="text-4xl font-bold text-primary font-garamond border-b-2 border-accent focus:outline-none focus:border-primary w-32"
-                      />
-                      <span className="text-textLight font-crimson text-xl ml-2">/month</span>
+                    <div className="text-center py-4">
+                      <p className="text-lg font-crimson text-primary">
+                        Choose your own amount
+                      </p>
                     </div>
                   ) : (
                     <>
