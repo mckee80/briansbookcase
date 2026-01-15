@@ -300,6 +300,9 @@ export default function Membership() {
                 <p className="text-sm text-gray-600 mt-2 font-crimson">
                   All tiers have the same access. Choose what you can afford to support mental health.
                 </p>
+                <p className="text-sm text-blue-600 mt-1 font-crimson">
+                  You can change your tier at any time on your account page.
+                </p>
               </div>
 
               <div>
