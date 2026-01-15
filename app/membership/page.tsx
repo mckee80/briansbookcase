@@ -45,15 +45,15 @@ const MEMBERSHIP_TIERS = [
     featured: true,
   },
   {
-    name: 'Champion',
-    price: 20,
+    name: 'Custom',
+    price: 0,
     features: [
       'Access entire library',
       'Download all ebooks',
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Choose $20/month',
+    buttonText: 'Choose Custom Amount',
     featured: false,
   },
 ];
@@ -69,6 +69,7 @@ export default function Membership() {
   const [success, setSuccess] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [signupEmail, setSignupEmail] = useState('');
+  const [customAmount, setCustomAmount] = useState('');
 
   const handleTierSelect = (tierName: string) => {
     setSelectedTier(tierName.toLowerCase());
@@ -91,18 +92,36 @@ export default function Membership() {
       return;
     }
 
+    // Validate custom amount if custom tier is selected
+    if (selectedTier === 'custom') {
+      const amount = parseFloat(customAmount);
+      if (!customAmount || isNaN(amount) || amount < 0) {
+        setError('Please enter a valid custom amount');
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       const tier = MEMBERSHIP_TIERS.find(t => t.name.toLowerCase() === selectedTier);
+
+      // Determine the price based on tier selection
+      let price = tier?.price || 0;
+      let tierName = tier?.name || 'Free';
+
+      if (selectedTier === 'custom') {
+        price = parseFloat(customAmount);
+        tierName = 'Custom';
+      }
 
       const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            membership_tier: tier?.name || 'Free',
-            membership_price: tier?.price || 0,
+            membership_tier: tierName,
+            membership_price: price,
           },
         },
       });
@@ -165,8 +184,29 @@ export default function Membership() {
                   {tier.name}
                 </h2>
                 <div className="mb-8">
-                  <span className="text-5xl font-bold text-primary font-garamond">${tier.price}</span>
-                  <span className="text-textLight font-crimson text-xl">/month</span>
+                  {tier.name === 'Custom' ? (
+                    <div className="flex items-baseline">
+                      <span className="text-2xl font-bold text-primary font-garamond mr-2">$</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={selectedTier === 'custom' ? customAmount : ''}
+                        onChange={(e) => {
+                          setCustomAmount(e.target.value);
+                          setSelectedTier('custom');
+                        }}
+                        placeholder="Enter amount"
+                        className="text-4xl font-bold text-primary font-garamond border-b-2 border-accent focus:outline-none focus:border-primary w-32"
+                      />
+                      <span className="text-textLight font-crimson text-xl ml-2">/month</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-5xl font-bold text-primary font-garamond">${tier.price}</span>
+                      <span className="text-textLight font-crimson text-xl">/month</span>
+                    </>
+                  )}
                 </div>
                 <ul className="space-y-3 mb-8">
                   {tier.features.map((feature, idx) => (
@@ -232,10 +272,31 @@ export default function Membership() {
                 >
                   {MEMBERSHIP_TIERS.map((tier) => (
                     <option key={tier.name} value={tier.name.toLowerCase()}>
-                      {tier.name} - ${tier.price}/month
+                      {tier.name === 'Custom'
+                        ? 'Custom - Choose your amount'
+                        : `${tier.name} - $${tier.price}/month`
+                      }
                     </option>
                   ))}
                 </select>
+                {selectedTier === 'custom' && (
+                  <div className="mt-3">
+                    <label htmlFor="customAmount" className="block font-crimson mb-2 text-sm text-primary">
+                      Enter your monthly amount ($)
+                    </label>
+                    <input
+                      type="number"
+                      id="customAmount"
+                      min="0"
+                      step="1"
+                      value={customAmount}
+                      onChange={(e) => setCustomAmount(e.target.value)}
+                      placeholder="Enter amount"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                      required
+                    />
+                  </div>
+                )}
                 <p className="text-sm text-gray-600 mt-2 font-crimson">
                   All tiers have the same access. Choose what you can afford to support mental health.
                 </p>
