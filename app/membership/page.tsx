@@ -196,7 +196,7 @@ export default function Membership() {
                           setCustomAmount(e.target.value);
                           setSelectedTier('custom');
                         }}
-                        placeholder="Enter amount"
+                        placeholder="0"
                         className="text-4xl font-bold text-primary font-garamond border-b-2 border-accent focus:outline-none focus:border-primary w-32"
                       />
                       <span className="text-textLight font-crimson text-xl ml-2">/month</span>
@@ -291,7 +291,7 @@ export default function Membership() {
                       step="1"
                       value={customAmount}
                       onChange={(e) => setCustomAmount(e.target.value)}
-                      placeholder="Enter amount"
+                      placeholder="0"
                       className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     />
