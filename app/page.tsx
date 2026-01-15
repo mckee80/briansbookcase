@@ -27,6 +27,11 @@ export default function Home() {
               <p className="font-bold text-primary">
                 We believe that a LARGE number of people, doing something SMALL consistently, can lead to GREAT things.
               </p>
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <p className="text-right font-crimson italic text-gray-700">
+                  — Sean McKee
+                </p>
+              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/membership">
