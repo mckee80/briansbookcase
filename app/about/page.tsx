@@ -35,6 +35,11 @@ export default function About() {
             <p>
               I created this site, in part, to transform my support from occasional actions into a consistent part of my life. With every hour I work and every dollar I earn, a tiny piece goes towards helping those impacted by the struggles my brother faced.
             </p>
+            <div className="mt-12 pt-6 border-t border-gray-200">
+              <p className="text-right text-3xl" style={{ fontFamily: "'Dancing Script', cursive", color: '#2C1810' }}>
+                Sean McKee
+              </p>
+            </div>
           </div>
         </section>
 
