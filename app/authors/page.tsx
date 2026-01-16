@@ -38,10 +38,10 @@ export default function Authors() {
                   <img
                     src={author.photoUrl}
                     alt={author.name}
-                    className="w-20 h-20 rounded-full object-cover mr-4 border-2 border-accent/30"
+                    className="w-32 h-32 rounded-full object-cover mr-6 border-2 border-accent/30"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-3xl font-bold text-accent mr-4">
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-5xl font-bold text-accent mr-6">
                     {author.name.charAt(0)}
                   </div>
                 )}
