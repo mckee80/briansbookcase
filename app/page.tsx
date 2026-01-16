@@ -8,10 +8,10 @@ export default function Home() {
         {/* Hero Section */}
         <section className="text-center mb-24">
           <div className="max-w-4xl mx-auto mb-16">
-            <h1 className="text-7xl font-bold font-garamond mb-2 text-primary leading-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-garamond mb-2 text-primary leading-tight">
               Read Stories, Change Lives
             </h1>
-            <p className="text-4xl font-light font-garamond italic text-gray-600 mb-8">
+            <p className="text-xl md:text-3xl lg:text-4xl font-light font-garamond italic text-gray-600 mb-8">
               Building Hope One Story at a Time
             </p>
             <div className="text-left max-w-3xl mx-auto space-y-6 mb-12 font-crimson text-lg leading-relaxed text-primary bg-white p-10 rounded-lg border-2 border-border shadow-lg relative page-corner">

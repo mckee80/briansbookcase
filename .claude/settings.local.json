@@ -22,7 +22,11 @@
       "Bash(git push:*)",
       "Bash(npm test:*)",
       "Bash(npm run test:coverage:*)",
-      "Bash(cmd /c \"rd /s /q .next 2>nul || echo OK\")"
+      "Bash(cmd /c \"rd /s /q .next 2>nul || echo OK\")",
+      "Bash(timeout /t 3 /nobreak)",
+      "Bash(cmd /c \"rd /s /q .next 2>nul\")",
+      "Bash(powershell -Command:*)",
+      "Bash(gh repo view:*)"
     ]
   }
 }
