@@ -5,7 +5,7 @@ export default function Shop() {
     <main className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold font-garamond mb-4 text-primary">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-garamond mb-4 text-primary">
             Shop
           </h1>
           <p className="font-crimson text-lg text-gray-700">
@@ -17,7 +17,7 @@ export default function Shop() {
         <div className="bg-white rounded-lg border-2 border-border shadow-lg p-12 text-center relative page-corner">
           <div className="mb-8">
             <div className="text-8xl mb-6">📚</div>
-            <h2 className="text-4xl font-bold font-garamond mb-4 text-primary">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-garamond mb-4 text-primary">
               Cool Merch Coming Soon!
             </h2>
             <p className="font-crimson text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">

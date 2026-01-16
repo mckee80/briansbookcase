@@ -6,7 +6,7 @@ export default function About() {
       <div className="max-w-[900px] mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold font-garamond mb-4 text-primary">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-garamond mb-4 text-primary">
             About Brian&apos;s Bookcase
           </h1>
           <p className="font-crimson text-lg text-textLight">

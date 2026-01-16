@@ -149,10 +149,10 @@ export default function Membership() {
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold font-garamond mb-4 text-primary">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-garamond mb-4 text-primary">
             Support Mental Health
           </h1>
-          <p className="font-crimson text-xl text-textLight max-w-3xl mx-auto mb-6">
+          <p className="font-crimson text-lg md:text-xl text-textLight max-w-3xl mx-auto mb-6">
             Your monthly contribution goes directly to suicide prevention charities
           </p>
           <div className="inline-flex items-center gap-3 bg-accent/10 px-6 py-4 rounded-xl max-w-4xl">
