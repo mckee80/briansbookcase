@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="bg-primary text-parchment mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-lg font-bold font-garamond mb-4">Brian&apos;s Bookcase</h3>
             <p className="font-crimson text-sm">
@@ -10,11 +10,19 @@ export default function Footer() {
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-bold font-garamond mb-4">Quick Links</h3>
+            <h3 className="text-lg font-bold font-garamond mb-4">Explore</h3>
             <ul className="space-y-2 font-crimson text-sm">
               <li><a href="/library" className="hover:text-accent transition-colors">Library</a></li>
+              <li><a href="/authors" className="hover:text-accent transition-colors">Authors</a></li>
               <li><a href="/shop" className="hover:text-accent transition-colors">Shop</a></li>
-              <li><a href="/membership" className="hover:text-accent transition-colors">Membership</a></li>
+              <li><a href="/about" className="hover:text-accent transition-colors">About</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-bold font-garamond mb-4">Get Involved</h3>
+            <ul className="space-y-2 font-crimson text-sm">
+              <li><a href="/membership" className="hover:text-accent transition-colors">Join Us</a></li>
+              <li><a href="/authors" className="hover:text-accent transition-colors">Become a Contributing Author</a></li>
             </ul>
           </div>
           <div>
