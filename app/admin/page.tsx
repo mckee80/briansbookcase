@@ -993,7 +993,7 @@ export default function AdminPage() {
                         No users found.
                       </p>
                       <p className="font-crimson text-sm text-gray-500">
-                        This could mean the database function hasn't been created yet, or you don't have admin permissions.
+                        This could mean the database function hasn&apos;t been created yet, or you don&apos;t have admin permissions.
                       </p>
                       <p className="font-crimson text-sm text-gray-500 mt-2">
                         Check the browser console for error details.
