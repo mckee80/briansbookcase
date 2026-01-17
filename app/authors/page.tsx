@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useData } from '@/contexts/DataContext';
 
 export default function Authors() {
@@ -103,9 +104,11 @@ export default function Authors() {
               </ul>
             </div>
           </div>
-          <button className="px-8 py-3 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold text-lg">
-            Become a Contributing Author
-          </button>
+          <Link href="/contribute">
+            <button className="px-8 py-3 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold text-lg">
+              Become a Contributing Author
+            </button>
+          </Link>
         </div>
       </div>
     </main>

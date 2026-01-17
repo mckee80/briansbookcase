@@ -157,7 +157,7 @@ BEGIN
     e.author,
     COUNT(*) FILTER (WHERE ba.activity_type = 'download') as download_count,
     COUNT(*) FILTER (WHERE ba.activity_type = 'send') as send_count,
-    COUNT(*) as total_activity
+    COUNT(ba.id) as total_activity
   FROM public.ebooks e
   LEFT JOIN public.book_activity ba ON ba.ebook_id = e.id
   GROUP BY e.id, e.title, e.author

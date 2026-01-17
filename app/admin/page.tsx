@@ -275,18 +275,27 @@ export default function AdminPage() {
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
+      console.log('Fetching users...');
       const { data, error } = await supabase.rpc('get_all_users_admin');
+
+      console.log('Users RPC response:', { data, error });
 
       if (error) {
         console.error('Error fetching users:', error);
+        alert(`Failed to fetch users: ${error.message}`);
         return;
       }
 
       if (data) {
+        console.log('Setting users data:', data);
         setUsers(data);
+      } else {
+        console.log('No data returned from RPC');
+        setUsers([]);
       }
     } catch (error) {
       console.error('Error fetching users:', error);
+      alert('Failed to fetch users. Please check console for details.');
     } finally {
       setLoadingUsers(false);
     }
@@ -360,50 +369,50 @@ export default function AdminPage() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="bg-white rounded-lg border-2 border-border shadow-lg mb-6">
-            <div className="flex border-b-2 border-border">
+          <div className="bg-white rounded-lg border-2 border-border shadow-lg mb-6 overflow-hidden">
+            <div className="flex border-b-2 border-border overflow-x-auto">
               <button
                 onClick={() => setActiveTab('ebooks')}
-                className={`flex items-center gap-2 px-6 py-4 font-crimson font-semibold transition-colors ${
+                className={`flex items-center gap-1 md:gap-2 px-3 md:px-6 py-3 md:py-4 font-crimson font-semibold transition-colors whitespace-nowrap text-sm md:text-base ${
                   activeTab === 'ebooks'
                     ? 'bg-primary text-parchment border-b-4 border-accent'
                     : 'text-primary hover:bg-parchment'
                 }`}
               >
-                <Book size={20} />
+                <Book size={18} className="md:w-5 md:h-5" />
                 Ebooks
               </button>
               <button
                 onClick={() => setActiveTab('authors')}
-                className={`flex items-center gap-2 px-6 py-4 font-crimson font-semibold transition-colors ${
+                className={`flex items-center gap-1 md:gap-2 px-3 md:px-6 py-3 md:py-4 font-crimson font-semibold transition-colors whitespace-nowrap text-sm md:text-base ${
                   activeTab === 'authors'
                     ? 'bg-primary text-parchment border-b-4 border-accent'
                     : 'text-primary hover:bg-parchment'
                 }`}
               >
-                <Users size={20} />
+                <Users size={18} className="md:w-5 md:h-5" />
                 Authors
               </button>
               <button
                 onClick={() => setActiveTab('analytics')}
-                className={`flex items-center gap-2 px-6 py-4 font-crimson font-semibold transition-colors ${
+                className={`flex items-center gap-1 md:gap-2 px-3 md:px-6 py-3 md:py-4 font-crimson font-semibold transition-colors whitespace-nowrap text-sm md:text-base ${
                   activeTab === 'analytics'
                     ? 'bg-primary text-parchment border-b-4 border-accent'
                     : 'text-primary hover:bg-parchment'
                 }`}
               >
-                <PieChartIcon size={20} />
+                <PieChartIcon size={18} className="md:w-5 md:h-5" />
                 Analytics
               </button>
               <button
                 onClick={() => setActiveTab('users')}
-                className={`flex items-center gap-2 px-6 py-4 font-crimson font-semibold transition-colors ${
+                className={`flex items-center gap-1 md:gap-2 px-3 md:px-6 py-3 md:py-4 font-crimson font-semibold transition-colors whitespace-nowrap text-sm md:text-base ${
                   activeTab === 'users'
                     ? 'bg-primary text-parchment border-b-4 border-accent'
                     : 'text-primary hover:bg-parchment'
                 }`}
               >
-                <Users size={20} />
+                <Users size={18} className="md:w-5 md:h-5" />
                 Users
               </button>
             </div>
@@ -979,53 +988,61 @@ export default function AdminPage() {
                       </p>
                     </div>
                   ) : users.length === 0 ? (
-                    <div className="text-center py-16">
-                      <p className="font-crimson text-xl text-gray-600">
+                    <div className="text-center py-16 bg-white border border-border rounded-lg p-8">
+                      <p className="font-crimson text-xl text-gray-600 mb-4">
                         No users found.
+                      </p>
+                      <p className="font-crimson text-sm text-gray-500">
+                        This could mean the database function hasn't been created yet, or you don't have admin permissions.
+                      </p>
+                      <p className="font-crimson text-sm text-gray-500 mt-2">
+                        Check the browser console for error details.
                       </p>
                     </div>
                   ) : (
-                    <div className="bg-white border border-border rounded-lg p-6">
+                    <div className="bg-white border border-border rounded-lg overflow-hidden">
                       <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <table className="w-full min-w-[640px]">
                           <thead>
-                            <tr className="border-b-2 border-border">
-                              <th className="text-left py-3 px-4 font-garamond text-primary">Email</th>
-                              <th className="text-left py-3 px-4 font-garamond text-primary">Tier</th>
-                              <th className="text-center py-3 px-4 font-garamond text-primary">Verified</th>
-                              <th className="text-center py-3 px-4 font-garamond text-primary">Joined</th>
-                              <th className="text-center py-3 px-4 font-garamond text-primary">Actions</th>
+                            <tr className="border-b-2 border-border bg-parchment">
+                              <th className="text-left py-2 px-2 md:py-3 md:px-4 font-garamond text-primary text-sm md:text-base">Email</th>
+                              <th className="text-left py-2 px-2 md:py-3 md:px-4 font-garamond text-primary text-sm md:text-base">Tier</th>
+                              <th className="text-center py-2 px-2 md:py-3 md:px-4 font-garamond text-primary text-sm md:text-base">Verified</th>
+                              <th className="text-center py-2 px-2 md:py-3 md:px-4 font-garamond text-primary text-sm md:text-base">Joined</th>
+                              <th className="text-center py-2 px-2 md:py-3 md:px-4 font-garamond text-primary text-sm md:text-base">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                             {users.map((userItem) => (
                               <tr key={userItem.id} className="border-b border-gray-200 hover:bg-parchment">
-                                <td className="py-3 px-4 font-crimson text-primary">{userItem.email}</td>
-                                <td className="py-3 px-4 font-crimson text-gray-700">
+                                <td className="py-2 px-2 md:py-3 md:px-4 font-crimson text-primary text-xs md:text-sm break-all">
+                                  {userItem.email}
+                                </td>
+                                <td className="py-2 px-2 md:py-3 md:px-4 font-crimson text-gray-700 text-xs md:text-sm whitespace-nowrap">
                                   {userItem.membership_tier || 'Free'}
                                 </td>
-                                <td className="py-3 px-4 text-center">
+                                <td className="py-2 px-2 md:py-3 md:px-4 text-center">
                                   {userItem.email_confirmed_at ? (
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                      Verified
+                                    <span className="inline-flex items-center px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                      ✓
                                     </span>
                                   ) : (
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                      Unverified
+                                    <span className="inline-flex items-center px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                      ✗
                                     </span>
                                   )}
                                 </td>
-                                <td className="py-3 px-4 font-crimson text-center text-gray-700">
+                                <td className="py-2 px-2 md:py-3 md:px-4 font-crimson text-center text-gray-700 text-xs md:text-sm whitespace-nowrap">
                                   {new Date(userItem.created_at).toLocaleDateString()}
                                 </td>
-                                <td className="py-3 px-4 text-center">
+                                <td className="py-2 px-2 md:py-3 md:px-4 text-center">
                                   {!userItem.email_confirmed_at && (
                                     <button
                                       onClick={() => handleVerifyEmail(userItem.id, userItem.email)}
                                       disabled={verifyingEmail === userItem.id}
-                                      className="px-3 py-1 bg-accent text-white rounded hover:bg-primary transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="px-2 py-1 md:px-3 md:py-1 bg-accent text-white rounded hover:bg-primary transition-colors text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                                     >
-                                      {verifyingEmail === userItem.id ? 'Verifying...' : 'Verify Email'}
+                                      {verifyingEmail === userItem.id ? 'Verifying...' : 'Verify'}
                                     </button>
                                   )}
                                 </td>
@@ -1033,6 +1050,11 @@ export default function AdminPage() {
                             ))}
                           </tbody>
                         </table>
+                      </div>
+                      <div className="p-4 bg-parchment border-t border-border">
+                        <p className="font-crimson text-sm text-gray-600 text-center">
+                          Total Users: <strong>{users.length}</strong>
+                        </p>
                       </div>
                     </div>
                   )}

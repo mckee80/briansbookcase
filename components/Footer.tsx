@@ -22,7 +22,7 @@ export default function Footer() {
             <h3 className="text-lg font-bold font-garamond mb-4">Get Involved</h3>
             <ul className="space-y-2 font-crimson text-sm">
               <li><a href="/membership" className="hover:text-accent transition-colors">Join Us</a></li>
-              <li><a href="/authors" className="hover:text-accent transition-colors">Become a Contributing Author</a></li>
+              <li><a href="/contribute" className="hover:text-accent transition-colors">Become a Contributing Author</a></li>
             </ul>
           </div>
           <div>
