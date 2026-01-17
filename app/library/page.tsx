@@ -43,9 +43,16 @@ export default function Library() {
     action();
   };
 
-  const handleDownload = (ebook: typeof ebooks[0]) => {
-    requireAuth(() => {
+  const handleDownload = async (ebook: typeof ebooks[0]) => {
+    requireAuth(async () => {
       if (ebook.downloadUrl) {
+        // Track download
+        await supabase.from('book_activity').insert({
+          ebook_id: ebook.id,
+          user_id: user?.id,
+          activity_type: 'download',
+        });
+
         window.open(ebook.downloadUrl, '_blank');
       } else {
         alert('Download not available for this ebook.');
@@ -57,6 +64,15 @@ export default function Library() {
     requireAuth(() => {
       setSelectedEbook(ebook);
       setModalOpen(true);
+    });
+  };
+
+  const handleSendComplete = async (ebookId: number) => {
+    // Track send to device
+    await supabase.from('book_activity').insert({
+      ebook_id: ebookId,
+      user_id: user?.id,
+      activity_type: 'send',
     });
   };
 
@@ -148,6 +164,7 @@ export default function Library() {
           ebookId={selectedEbook.id}
           ebookTitle={selectedEbook.title}
           userId={user?.id || ''}
+          onSendComplete={handleSendComplete}
         />
       )}
     </main>

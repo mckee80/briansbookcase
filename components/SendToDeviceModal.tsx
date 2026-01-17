@@ -14,6 +14,7 @@ interface SendToDeviceModalProps {
   ebookId: number;
   ebookTitle: string;
   userId: string;
+  onSendComplete?: (ebookId: number) => void;
 }
 
 export default function SendToDeviceModal({
@@ -22,6 +23,7 @@ export default function SendToDeviceModal({
   ebookId,
   ebookTitle,
   userId,
+  onSendComplete,
 }: SendToDeviceModalProps) {
   const [deviceEmail, setDeviceEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -73,6 +75,12 @@ export default function SendToDeviceModal({
       }
 
       setSuccess(true);
+
+      // Call the tracking callback
+      if (onSendComplete) {
+        onSendComplete(ebookId);
+      }
+
       setTimeout(() => {
         onClose();
         setSuccess(false);

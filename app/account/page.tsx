@@ -41,6 +41,13 @@ export default function Account() {
         return;
       }
 
+      // Track tier change
+      await supabase.from('tier_changes').insert({
+        user_id: user?.id,
+        old_tier: currentTier,
+        new_tier: tier.name,
+      });
+
       // Update user metadata
       const { error } = await supabase.auth.updateUser({
         data: {
@@ -75,6 +82,13 @@ export default function Account() {
     setDeleteLoading(true);
 
     try {
+      // Track account deletion before deleting
+      await supabase.from('account_deletions').insert({
+        user_id: user?.id,
+        user_email: user?.email,
+        membership_tier: currentTier,
+      });
+
       // Delete the user account from Supabase Auth
       const { error } = await supabase.rpc('delete_user');
 

@@ -38,6 +38,20 @@ export default function AdminPage() {
   const [membershipData, setMembershipData] = useState<Array<{ name: string; value: number; color: string }>>([]);
   const [loadingMembership, setLoadingMembership] = useState(false);
 
+  // Analytics state
+  const [signupsPerWeek, setSignupsPerWeek] = useState<Array<{ week_start: string; signup_count: number }>>([]);
+  const [tierChanges, setTierChanges] = useState<Array<{ old_tier: string; new_tier: string; change_count: number }>>([]);
+  const [accountDeletions, setAccountDeletions] = useState<number>(0);
+  const [bookStats, setBookStats] = useState<Array<{
+    ebook_id: number;
+    title: string;
+    author: string;
+    download_count: number;
+    send_count: number;
+    total_activity: number;
+  }>>([]);
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+
   // Ebook state
   const [newEbook, setNewEbook] = useState({
     title: '',
@@ -210,10 +224,47 @@ export default function AdminPage() {
     }
   };
 
+  // Fetch advanced analytics data
+  const fetchAdvancedAnalytics = async () => {
+    setLoadingAnalytics(true);
+    try {
+      // Fetch signups per week
+      const { data: signupData, error: signupError } = await supabase.rpc('get_signups_per_week', { weeks_back: 12 });
+      if (!signupError && signupData) {
+        setSignupsPerWeek(signupData);
+      }
+
+      // Fetch tier changes
+      const { data: tierChangeData, error: tierChangeError } = await supabase.rpc('get_tier_changes_summary', { days_back: 30 });
+      if (!tierChangeError && tierChangeData) {
+        setTierChanges(tierChangeData);
+      }
+
+      // Fetch account deletions count
+      const { count: deletionCount, error: deletionError } = await supabase
+        .from('account_deletions')
+        .select('*', { count: 'exact', head: true });
+      if (!deletionError && deletionCount !== null) {
+        setAccountDeletions(deletionCount);
+      }
+
+      // Fetch book stats
+      const { data: bookStatsData, error: bookStatsError } = await supabase.rpc('get_book_download_stats');
+      if (!bookStatsError && bookStatsData) {
+        setBookStats(bookStatsData);
+      }
+    } catch (error) {
+      console.error('Error fetching advanced analytics:', error);
+    } finally {
+      setLoadingAnalytics(false);
+    }
+  };
+
   // Fetch membership data when analytics tab is opened
   useEffect(() => {
     if (activeTab === 'analytics') {
       fetchMembershipData();
+      fetchAdvancedAnalytics();
     }
   }, [activeTab]);
 
@@ -721,6 +772,125 @@ export default function AdminPage() {
                       </div>
                     </div>
                     </div>
+                  )}
+
+                  {/* New Analytics Sections */}
+                  {!loadingAnalytics && (
+                    <>
+                      {/* Signups Per Week */}
+                      <div className="mt-8">
+                        <h2 className="text-2xl font-bold font-garamond text-primary mb-6">
+                          User Signups (Last 12 Weeks)
+                        </h2>
+                        <div className="bg-white border border-border rounded-lg p-6">
+                          {signupsPerWeek.length > 0 ? (
+                            <div className="space-y-3">
+                              {signupsPerWeek.map((week) => (
+                                <div key={week.week_start} className="flex justify-between items-center p-3 bg-parchment rounded">
+                                  <span className="font-crimson text-primary">
+                                    Week of {new Date(week.week_start).toLocaleDateString()}
+                                  </span>
+                                  <span className="font-bold font-garamond text-accent">
+                                    {week.signup_count} signups
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="font-crimson text-gray-600 text-center py-8">
+                              No signup data available yet.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Tier Changes */}
+                      <div className="mt-8">
+                        <h2 className="text-2xl font-bold font-garamond text-primary mb-6">
+                          Membership Tier Changes (Last 30 Days)
+                        </h2>
+                        <div className="bg-white border border-border rounded-lg p-6">
+                          {tierChanges.length > 0 ? (
+                            <div className="space-y-3">
+                              {tierChanges.map((change, idx) => (
+                                <div key={idx} className="flex justify-between items-center p-3 bg-parchment rounded">
+                                  <span className="font-crimson text-primary">
+                                    {change.old_tier || 'New User'} → {change.new_tier}
+                                  </span>
+                                  <span className="font-bold font-garamond text-accent">
+                                    {change.change_count} changes
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="font-crimson text-gray-600 text-center py-8">
+                              No tier changes in the last 30 days.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Account Deletions */}
+                      <div className="mt-8">
+                        <h2 className="text-2xl font-bold font-garamond text-primary mb-6">
+                          Account Deletions
+                        </h2>
+                        <div className="bg-white border border-border rounded-lg p-6">
+                          <p className="font-crimson text-gray-700 text-center">
+                            <span className="text-3xl font-bold font-garamond text-red-600 block mb-2">
+                              {accountDeletions}
+                            </span>
+                            Total accounts deleted
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Book Download Stats */}
+                      <div className="mt-8">
+                        <h2 className="text-2xl font-bold font-garamond text-primary mb-6">
+                          Book Activity Statistics
+                        </h2>
+                        <div className="bg-white border border-border rounded-lg p-6">
+                          {bookStats.length > 0 ? (
+                            <div className="overflow-x-auto">
+                              <table className="w-full">
+                                <thead>
+                                  <tr className="border-b-2 border-border">
+                                    <th className="text-left py-3 px-4 font-garamond text-primary">Title</th>
+                                    <th className="text-left py-3 px-4 font-garamond text-primary">Author</th>
+                                    <th className="text-center py-3 px-4 font-garamond text-primary">Downloads</th>
+                                    <th className="text-center py-3 px-4 font-garamond text-primary">Sends</th>
+                                    <th className="text-center py-3 px-4 font-garamond text-primary">Total</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {bookStats.map((book) => (
+                                    <tr key={book.ebook_id} className="border-b border-gray-200 hover:bg-parchment">
+                                      <td className="py-3 px-4 font-crimson text-primary">{book.title}</td>
+                                      <td className="py-3 px-4 font-crimson text-gray-700">{book.author}</td>
+                                      <td className="py-3 px-4 font-crimson text-center text-accent font-bold">
+                                        {book.download_count}
+                                      </td>
+                                      <td className="py-3 px-4 font-crimson text-center text-accent font-bold">
+                                        {book.send_count}
+                                      </td>
+                                      <td className="py-3 px-4 font-crimson text-center text-primary font-bold">
+                                        {book.total_activity}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : (
+                            <p className="font-crimson text-gray-600 text-center py-8">
+                              No book activity tracked yet.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </>
                   )}
                 </div>
               )}

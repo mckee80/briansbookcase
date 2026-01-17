@@ -16,8 +16,12 @@ Before using the application, you **must** set up the database tables in Supabas
 This will create:
 - `ebooks` table - Stores all ebook information
 - `authors` table - Stores author information with book counts
+- `tier_changes` table - Tracks when users change membership tiers
+- `account_deletions` table - Tracks when users delete their accounts
+- `book_activity` table - Tracks book downloads and sends
 - Row Level Security policies - Controls who can read/write data
 - Triggers - Automatically updates author book counts when ebooks change
+- Analytics functions - Provides signup, tier change, and book activity statistics
 - Initial sample data - 4 ebooks and 4 authors to get started
 
 ### What the Migration Does:
