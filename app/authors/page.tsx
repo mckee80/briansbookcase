@@ -38,8 +38,9 @@ export default function Authors() {
                   <img
                     src={author.photoUrl}
                     alt={author.name}
-                    className="w-32 h-32 rounded-full object-cover object-center mr-6 border-2 border-accent/30"
-                    style={author.name === 'Brian Paul McKee' ? { objectPosition: 'center 20%' } : undefined}
+                    className={`w-32 h-32 rounded-full mr-6 border-2 border-accent/30 ${
+                      author.name === 'Brian Paul McKee' ? 'object-contain bg-white' : 'object-cover object-center'
+                    }`}
                   />
                 ) : (
                   <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-5xl font-bold text-accent mr-6">
