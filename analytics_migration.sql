@@ -164,3 +164,66 @@ BEGIN
   ORDER BY total_activity DESC;
 END;
 $$;
+
+-- =============================================
+-- USER MANAGEMENT FUNCTIONS
+-- =============================================
+
+-- Function to get all users (admin only)
+CREATE OR REPLACE FUNCTION get_all_users_admin()
+RETURNS TABLE (
+  id UUID,
+  email TEXT,
+  email_confirmed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ,
+  membership_tier TEXT
+) LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  -- Check if the calling user is an admin
+  IF NOT EXISTS (
+    SELECT 1 FROM auth.users
+    WHERE auth.users.id = auth.uid()
+    AND (auth.users.raw_user_meta_data->>'is_admin')::boolean = true
+  ) THEN
+    RAISE EXCEPTION 'Unauthorized: Admin access required';
+  END IF;
+
+  RETURN QUERY
+  SELECT
+    auth.users.id,
+    auth.users.email::TEXT,
+    auth.users.email_confirmed_at,
+    auth.users.created_at,
+    COALESCE(
+      (auth.users.raw_user_meta_data->>'membership_tier')::TEXT,
+      'Free'
+    ) as membership_tier
+  FROM auth.users
+  ORDER BY auth.users.created_at DESC;
+END;
+$$;
+
+-- Function to manually verify a user's email (admin only)
+CREATE OR REPLACE FUNCTION admin_verify_user_email(user_id UUID)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  -- Check if the calling user is an admin
+  IF NOT EXISTS (
+    SELECT 1 FROM auth.users
+    WHERE auth.users.id = auth.uid()
+    AND (auth.users.raw_user_meta_data->>'is_admin')::boolean = true
+  ) THEN
+    RAISE EXCEPTION 'Unauthorized: Admin access required';
+  END IF;
+
+  -- Update the user's email_confirmed_at timestamp
+  UPDATE auth.users
+  SET email_confirmed_at = NOW()
+  WHERE id = user_id
+  AND email_confirmed_at IS NULL;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'User not found or already verified';
+  END IF;
+END;
+$$;

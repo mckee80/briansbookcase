@@ -32,7 +32,7 @@ const tierNames: Record<string, string> = {
 export default function AdminPage() {
   const { user } = useAuth();
   const { ebooks, authors, addEbook, removeEbook, addAuthor, updateAuthor, removeAuthor } = useData();
-  const [activeTab, setActiveTab] = useState<'ebooks' | 'authors' | 'analytics'>('ebooks');
+  const [activeTab, setActiveTab] = useState<'ebooks' | 'authors' | 'analytics' | 'users'>('ebooks');
 
   // Membership data state
   const [membershipData, setMembershipData] = useState<Array<{ name: string; value: number; color: string }>>([]);
@@ -51,6 +51,17 @@ export default function AdminPage() {
     total_activity: number;
   }>>([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+
+  // User management state
+  const [users, setUsers] = useState<Array<{
+    id: string;
+    email: string;
+    email_confirmed_at: string | null;
+    created_at: string;
+    membership_tier: string;
+  }>>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [verifyingEmail, setVerifyingEmail] = useState<string | null>(null);
 
   // Ebook state
   const [newEbook, setNewEbook] = useState({
@@ -260,11 +271,59 @@ export default function AdminPage() {
     }
   };
 
+  // Fetch users for user management
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const { data, error } = await supabase.rpc('get_all_users_admin');
+
+      if (error) {
+        console.error('Error fetching users:', error);
+        return;
+      }
+
+      if (data) {
+        setUsers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // Manually verify a user's email
+  const handleVerifyEmail = async (userId: string, userEmail: string) => {
+    setVerifyingEmail(userId);
+    try {
+      const { error } = await supabase.rpc('admin_verify_user_email', {
+        user_id: userId
+      });
+
+      if (error) {
+        alert(`Failed to verify email: ${error.message}`);
+        return;
+      }
+
+      alert(`Email verified successfully for ${userEmail}`);
+
+      // Refresh the users list
+      await fetchUsers();
+    } catch (error) {
+      alert('Failed to verify email. Please try again.');
+      console.error(error);
+    } finally {
+      setVerifyingEmail(null);
+    }
+  };
+
   // Fetch membership data when analytics tab is opened
   useEffect(() => {
     if (activeTab === 'analytics') {
       fetchMembershipData();
       fetchAdvancedAnalytics();
+    } else if (activeTab === 'users') {
+      fetchUsers();
     }
   }, [activeTab]);
 
@@ -335,6 +394,17 @@ export default function AdminPage() {
               >
                 <PieChartIcon size={20} />
                 Analytics
+              </button>
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`flex items-center gap-2 px-6 py-4 font-crimson font-semibold transition-colors ${
+                  activeTab === 'users'
+                    ? 'bg-primary text-parchment border-b-4 border-accent'
+                    : 'text-primary hover:bg-parchment'
+                }`}
+              >
+                <Users size={20} />
+                Users
               </button>
             </div>
 
@@ -891,6 +961,80 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </>
+                  )}
+                </div>
+              )}
+
+              {/* Users Tab */}
+              {activeTab === 'users' && (
+                <div>
+                  <h2 className="text-2xl font-bold font-garamond text-primary mb-6">
+                    User Management
+                  </h2>
+
+                  {loadingUsers ? (
+                    <div className="text-center py-16">
+                      <p className="font-crimson text-xl text-gray-600">
+                        Loading users...
+                      </p>
+                    </div>
+                  ) : users.length === 0 ? (
+                    <div className="text-center py-16">
+                      <p className="font-crimson text-xl text-gray-600">
+                        No users found.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-white border border-border rounded-lg p-6">
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b-2 border-border">
+                              <th className="text-left py-3 px-4 font-garamond text-primary">Email</th>
+                              <th className="text-left py-3 px-4 font-garamond text-primary">Tier</th>
+                              <th className="text-center py-3 px-4 font-garamond text-primary">Verified</th>
+                              <th className="text-center py-3 px-4 font-garamond text-primary">Joined</th>
+                              <th className="text-center py-3 px-4 font-garamond text-primary">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {users.map((userItem) => (
+                              <tr key={userItem.id} className="border-b border-gray-200 hover:bg-parchment">
+                                <td className="py-3 px-4 font-crimson text-primary">{userItem.email}</td>
+                                <td className="py-3 px-4 font-crimson text-gray-700">
+                                  {userItem.membership_tier || 'Free'}
+                                </td>
+                                <td className="py-3 px-4 text-center">
+                                  {userItem.email_confirmed_at ? (
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                      Verified
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                      Unverified
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="py-3 px-4 font-crimson text-center text-gray-700">
+                                  {new Date(userItem.created_at).toLocaleDateString()}
+                                </td>
+                                <td className="py-3 px-4 text-center">
+                                  {!userItem.email_confirmed_at && (
+                                    <button
+                                      onClick={() => handleVerifyEmail(userItem.id, userItem.email)}
+                                      disabled={verifyingEmail === userItem.id}
+                                      className="px-3 py-1 bg-accent text-white rounded hover:bg-primary transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      {verifyingEmail === userItem.id ? 'Verifying...' : 'Verify Email'}
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}
