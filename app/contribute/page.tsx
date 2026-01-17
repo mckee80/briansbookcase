@@ -59,9 +59,6 @@ export default function Contribute() {
                 </li>
               </ul>
             </div>
-            <p className="text-sm text-gray-600 italic">
-              We will expand format options once we learn how to convert other formats into the Ebook format.
-            </p>
           </div>
         </section>
 
