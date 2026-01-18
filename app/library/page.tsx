@@ -4,7 +4,7 @@ import { useData } from '@/contexts/DataContext';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Download, Send } from 'lucide-react';
+import { Download, Send, BookOpen } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import SendToDeviceModal from '@/components/SendToDeviceModal';
 
@@ -76,6 +76,12 @@ export default function Library() {
     });
   };
 
+  const handleReadNow = (ebook: typeof ebooks[0]) => {
+    requireAuth(() => {
+      router.push(`/library/read/${ebook.id}`);
+    });
+  };
+
   return (
     <main className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
@@ -125,23 +131,33 @@ export default function Library() {
                     {ebook.genre} • {ebook.year}
                   </span>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
                   <button
-                    onClick={() => handleDownload(ebook)}
+                    onClick={() => handleReadNow(ebook)}
                     disabled={!ebook.downloadUrl}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-accent text-white rounded hover:bg-primary transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-primary text-white rounded hover:bg-accent transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Download size={16} />
-                    Download
+                    <BookOpen size={16} />
+                    Read Now
                   </button>
-                  <button
-                    onClick={() => handleSendToDevice(ebook)}
-                    disabled={!ebook.downloadUrl}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border-2 border-accent text-accent rounded hover:bg-accent hover:text-white transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Send size={16} />
-                    Send
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleDownload(ebook)}
+                      disabled={!ebook.downloadUrl}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-accent text-white rounded hover:bg-primary transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Download size={16} />
+                      Download
+                    </button>
+                    <button
+                      onClick={() => handleSendToDevice(ebook)}
+                      disabled={!ebook.downloadUrl}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border-2 border-accent text-accent rounded hover:bg-accent hover:text-white transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send size={16} />
+                      Send
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
