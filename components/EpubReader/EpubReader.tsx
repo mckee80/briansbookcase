@@ -144,6 +144,11 @@ export default function EpubReader({
       }));
       setToc(tocItems);
     });
+
+    // Auto-display the book if no location is set
+    if (!location) {
+      rendition.display();
+    }
   };
 
   const handleSettingsChange = (newSettings: ReaderSettings) => {

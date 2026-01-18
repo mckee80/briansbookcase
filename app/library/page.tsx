@@ -98,12 +98,12 @@ export default function Library() {
               key={ebook.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 border-2 border-border"
             >
-              <div className="h-80 relative bg-gray-100">
+              <div className="h-80 relative bg-gray-100 flex items-center justify-center">
                 {ebook.coverImage ? (
                   <img
                     src={ebook.coverImage}
                     alt={`Cover of ${ebook.title}`}
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-full object-contain"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
