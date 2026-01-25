@@ -1,7 +1,7 @@
 # Brian's Bookcase Bookmark Design Specification
 
 ## Overview
-Minimalist double-sided bookmark for distribution with bookstore book sales. Designed to drive website traffic and raise awareness for suicide prevention through literature.
+Minimalist double-sided bookmark for distribution with bookstore book sales. Designed to drive website traffic and raise awareness for mental health through literature.
 
 ---
 
@@ -104,11 +104,11 @@ Minimalist double-sided bookmark for distribution with bookstore book sales. Des
 │ Scan to browse our  │ ← Call-to-action: 10pt
 │   free library      │
 │                     │
-│ briansbookcase.com  │ ← URL: 11-12pt, bold
+│ briansbookcase.org  │ ← URL: 11-12pt, bold
 │                     │
 │  All proceeds from  │ ← Mission: 9pt, italic
 │ book sales support  │
-│ suicide prevention  │
+│mental health programs│
 │                     │
 └─────────────────────┘
 ```
@@ -118,7 +118,7 @@ Minimalist double-sided bookmark for distribution with bookstore book sales. Des
 **QR Code**
 - Size: 1" × 1" (25.4mm × 25.4mm)
 - Position: Centered horizontally, 1" from top edge
-- URL: `https://briansbookcase.com` (or tracking URL: `briansbookcase.com/bookmark`)
+- URL: `https://briansbookcase.org` (or tracking URL: `briansbookcase.org/bookmark`)
 - Error Correction: High (30%) for printing durability
 - Color: Rich Brown (#2C1810) on white background
 - Border: 0.1" white margin around QR for scanning reliability
@@ -131,14 +131,14 @@ Minimalist double-sided bookmark for distribution with bookstore book sales. Des
 - Style: Regular weight
 
 **Website URL**
-- Text: "briansbookcase.com"
+- Text: "briansbookcase.org"
 - Font: Crimson Pro, 11-12pt
 - Color: Rich Brown (#2C1810)
 - Position: Centered, 0.25" below call-to-action
 - Style: Bold or semibold
 
 **Mission Statement**
-- Text: "All proceeds from book sales support suicide prevention"
+- Text: "All proceeds from book sales support mental health programs"
 - Font: Crimson Pro, 9pt
 - Color: Saddle Brown (#8B4513)
 - Position: Centered, lower third
@@ -156,12 +156,12 @@ Minimalist double-sided bookmark for distribution with bookstore book sales. Des
 ### URL Options
 
 **Option 1: Direct**
-- Target: `https://briansbookcase.com`
+- Target: `https://briansbookcase.org`
 - Pro: Simple, direct to homepage
 - Con: No analytics on bookmark scans
 
 **Option 2: Tracking (Recommended)**
-- Target: `https://briansbookcase.com/bookmark`
+- Target: `https://briansbookcase.org/bookmark`
 - Set up redirect in Next.js to homepage
 - Pro: Track bookmark effectiveness via analytics
 - Con: Requires creating redirect route
@@ -372,7 +372,7 @@ This bookmark design balances:
 - **Simplicity**: Clean, uncluttered design
 - **Branding**: Consistent with website aesthetic
 - **Functionality**: QR code for easy access
-- **Mission**: Clear messaging about suicide prevention
+- **Mission**: Clear messaging about mental health
 - **Practicality**: Durable for actual use as a bookmark
 
 The minimalist approach ensures it feels like a quality gift rather than marketing material, which is appropriate for the bookstore giveaway context.

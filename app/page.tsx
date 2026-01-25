@@ -16,7 +16,7 @@ export default function Home() {
             </p>
             <div className="text-left max-w-3xl mx-auto space-y-6 mb-12 font-crimson text-lg leading-relaxed text-primary bg-white p-10 rounded-lg border-2 border-border shadow-lg relative page-corner">
               <p className="drop-cap">
-                Every story you read here supports suicide prevention. Our library features donated fiction from talented writers—100% of membership contributions fund crisis intervention services and mental health programs that save lives.
+                Every story you read here supports mental health programs. Our library features donated fiction from talented writers—100% of membership contributions fund crisis intervention services and mental wellness programs that save lives.
               </p>
               <p>
                 If you&apos;ve struggled with mental health, or watched someone you love fight that battle, you know how much support matters. Every person helped by these charities is someone&apos;s child, friend, or relative. Use your love of stories to give someone suffering a helping hand.
@@ -61,7 +61,7 @@ export default function Home() {
             </div>
             <h3 className="text-2xl font-bold font-garamond mb-3">Support Mental Health</h3>
             <p className="font-crimson text-gray-700">
-              100% of membership fees fund suicide prevention and mental health programs
+              100% of membership fees fund mental health and crisis support programs
             </p>
           </div>
 

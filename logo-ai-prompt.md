@@ -3,7 +3,7 @@
 ## Quick Prompt (Copy & Paste)
 
 ```
-Create a professional logo for "Brian's Bookcase" - a literary charity supporting suicide prevention through donated fiction.
+Create a professional logo for "Brian's Bookcase" - a literary charity supporting mental health through donated fiction.
 
 Style: Classic, warm, timeless bookshop aesthetic
 Colors: Dark brown (#2C1810), saddle brown (#8B4513), cream/parchment (#F5E6D3)
@@ -17,7 +17,7 @@ The logo should work in both horizontal and square formats, scale well from favi
 ## Extended Prompt (More Detail)
 
 ```
-Design a professional logo for "Brian's Bookcase" - a nonprofit organization where readers access donated fiction through memberships that fund suicide prevention charities.
+Design a professional logo for "Brian's Bookcase" - a nonprofit organization where readers access donated fiction through memberships that fund mental health charities.
 
 BRAND IDENTITY:
 - Name: Brian's Bookcase
@@ -59,7 +59,7 @@ Focus on hope, stories, and compassion rather than tragedy. The organization hon
 ## Minimal Prompt (Ultra-Short)
 
 ```
-Logo for "Brian's Bookcase" - literary charity for suicide prevention. Classic bookshop aesthetic. Colors: dark brown #2C1810, saddle brown #8B4513, cream #F5E6D3. Elegant serif font. Bookcase/library imagery. Warm, hopeful, professional. Horizontal layout preferred.
+Logo for "Brian's Bookcase" - literary charity for mental health. Classic bookshop aesthetic. Colors: dark brown #2C1810, saddle brown #8B4513, cream #F5E6D3. Elegant serif font. Bookcase/library imagery. Warm, hopeful, professional. Horizontal layout preferred.
 ```
 
 ## Element-Specific Prompts

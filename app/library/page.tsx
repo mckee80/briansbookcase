@@ -89,7 +89,7 @@ export default function Library() {
           Our Library
         </h1>
         <p className="font-crimson text-lg mb-8 text-gray-700">
-          Browse our collection of donated stories. All proceeds support suicide prevention initiatives.
+          Browse our collection of donated stories. All proceeds support mental health initiatives.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

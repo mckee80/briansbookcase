@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
 
           <div style="background-color: #FEF3C7; border-left: 4px solid #F59E0B; padding: 16px; margin: 24px 0;">
             <p style="color: #92400E; font-size: 14px; margin: 0;">
-              All proceeds from Brian's Bookcase support suicide prevention initiatives.
+              All proceeds from Brian's Bookcase support mental health initiatives.
               Thank you for being part of our mission to save lives through stories.
             </p>
           </div>

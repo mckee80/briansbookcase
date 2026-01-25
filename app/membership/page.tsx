@@ -153,7 +153,7 @@ export default function Membership() {
             Support Mental Health
           </h1>
           <p className="font-crimson text-lg md:text-xl text-textLight max-w-3xl mx-auto mb-6">
-            Your monthly contribution goes directly to suicide prevention charities
+            Your monthly contribution goes directly to mental health organizations
           </p>
           <div className="inline-flex items-center gap-3 bg-accent/10 px-6 py-4 rounded-xl max-w-4xl">
             <Heart className="text-accent flex-shrink-0" size={24} />
@@ -225,7 +225,7 @@ export default function Membership() {
           <p className="font-crimson text-primary text-center leading-relaxed">
             We ask for monthly donations because consistent support from many people, even in small amounts,
             is more sustainable than occasional larger gifts. Your monthly contribution joins with others to
-            create reliable funding for mental health and suicide prevention charities.
+            create reliable funding for mental health and crisis intervention programs.
           </p>
         </div>
 

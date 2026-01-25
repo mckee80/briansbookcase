@@ -147,7 +147,7 @@ Click "Environment Variables" and add these TWO variables:
 
 ### Buy Custom Domain (Later)
 When ready:
-- [ ] Buy domain (e.g., briansbookcase.com)
+- [ ] Buy domain (e.g., briansbookcase.org)
 - [ ] Add to Vercel (Settings → Domains)
 - [ ] Update DNS at your registrar
 - [ ] Wait for DNS propagation

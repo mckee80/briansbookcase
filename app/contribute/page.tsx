@@ -11,7 +11,7 @@ export default function Contribute() {
             Become a Contributing Author
           </h1>
           <p className="font-crimson text-lg text-gray-700">
-            Share your fiction to support mental health and suicide prevention
+            Share your fiction to support mental health awareness
           </p>
         </div>
 

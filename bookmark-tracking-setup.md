@@ -8,7 +8,7 @@ This guide covers how to track bookmark QR code scans and view geographic data u
 ## What's Already Implemented
 
 ✅ **Bookmark redirect page**: `app/bookmark/page.tsx`
-- URL: `https://briansbookcase.com/bookmark`
+- URL: `https://briansbookcase.org/bookmark`
 - Shows welcome message for 1.5 seconds
 - Automatically redirects to homepage
 - Tracks scan event in Google Analytics (if configured)
@@ -19,12 +19,12 @@ This guide covers how to track bookmark QR code scans and view geographic data u
 
 Use this URL in your bookmark QR code:
 ```
-https://briansbookcase.com/bookmark
+https://briansbookcase.org/bookmark
 ```
 
 Or if not using HTTPS yet:
 ```
-http://briansbookcase.com/bookmark
+http://briansbookcase.org/bookmark
 ```
 
 **Test the page**: Visit the URL directly to see the welcome message and redirect.
@@ -52,7 +52,7 @@ http://briansbookcase.com/bookmark
 1. In Google Analytics, go to **Admin** (gear icon, bottom left)
 2. Under **Property**, click **Data Streams**
 3. Click **Add stream** → **Web**
-4. Enter your website URL: `briansbookcase.com`
+4. Enter your website URL: `briansbookcase.org`
 5. Enter stream name: "Brian's Bookcase"
 6. Click **Create stream**
 7. Copy your **Measurement ID** (looks like `G-XXXXXXXXXX`)
@@ -168,7 +168,7 @@ git push
 
 ### Step 5: Verify Tracking Works
 
-1. Visit your deployed site: `briansbookcase.com/bookmark`
+1. Visit your deployed site: `briansbookcase.org/bookmark`
 2. Wait 24-48 hours for data to appear
 3. In Google Analytics, go to **Reports** → **Realtime**
 4. Visit `/bookmark` in another browser tab
@@ -300,8 +300,8 @@ Each redirects to homepage but tracks separately in analytics.
 ### Method 2: UTM Parameters
 
 Use URLs like:
-- `briansbookcase.com/bookmark?source=bookstore_a`
-- `briansbookcase.com/bookmark?source=library`
+- `briansbookcase.org/bookmark?source=bookstore_a`
+- `briansbookcase.org/bookmark?source=library`
 
 Track the source parameter in analytics.
 
@@ -330,7 +330,7 @@ If you have European visitors:
 ### Pre-Print Checklist
 
 1. **QR Code Works:**
-   - Generate QR code with URL: `briansbookcase.com/bookmark`
+   - Generate QR code with URL: `briansbookcase.org/bookmark`
    - Test scan with iPhone camera app
    - Test scan with Android camera app
    - Verify it opens your site
@@ -357,7 +357,7 @@ If you have European visitors:
 ## Troubleshooting
 
 ### QR Code Not Working
-- **Check URL**: Ensure it's exactly `briansbookcase.com/bookmark` (no typos)
+- **Check URL**: Ensure it's exactly `briansbookcase.org/bookmark` (no typos)
 - **Check QR size**: Must be at least 1" × 1" when printed
 - **Check error correction**: Use High (30%) setting when generating QR
 - **Test before printing**: Always test digital QR before printing thousands
@@ -418,7 +418,7 @@ Peak scan time: Weekday afternoons 2-5pm
 1. ✅ Bookmark redirect page created (`/bookmark`)
 2. ⏳ Set up Google Analytics (or Vercel Analytics)
 3. ⏳ Test the `/bookmark` URL
-4. ⏳ Generate QR code with URL `briansbookcase.com/bookmark`
+4. ⏳ Generate QR code with URL `briansbookcase.org/bookmark`
 5. ⏳ Test QR code on mobile devices
 6. ⏳ Update bookmark design with QR code
 7. ⏳ Print test bookmarks and verify QR works
@@ -434,6 +434,6 @@ You now have:
 - ✅ `/bookmark` redirect page that welcomes users and redirects to homepage
 - ✅ Automatic tracking of bookmark scans (when analytics is set up)
 - ✅ Geographic data showing where scans come from
-- ✅ Clean URL for QR code: `briansbookcase.com/bookmark`
+- ✅ Clean URL for QR code: `briansbookcase.org/bookmark`
 
 This simple setup gives you valuable data about bookmark effectiveness while maintaining a professional user experience.

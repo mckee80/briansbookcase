@@ -6,7 +6,7 @@ import { DataProvider } from "@/contexts/DataContext";
 
 export const metadata: Metadata = {
   title: "Brian's Bookcase - Supporting Mental Health Through Stories",
-  description: "A charity website dedicated to mental health, offering donated fiction stories to support suicide prevention and mental health resources.",
+  description: "A charity website dedicated to mental health, offering donated fiction stories to support crisis intervention and mental wellness.",
 };
 
 export default function RootLayout({

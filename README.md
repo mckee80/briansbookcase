@@ -1,6 +1,6 @@
 # BriansBookcase
 
-A charity website supporting suicide prevention through donated fiction ebooks.
+A charity website supporting mental health through donated fiction ebooks.
 
 ## Tech Stack
 
@@ -122,4 +122,4 @@ The project includes mock data in [data/mockData.ts](data/mockData.ts):
 
 ## Mission
 
-BriansBookcase is dedicated to supporting suicide prevention through the power of literature. We provide donated fiction ebooks to raise awareness and funds for mental health resources.
+BriansBookcase is dedicated to supporting mental health through the power of literature. We provide donated fiction ebooks to raise awareness and funds for mental health resources.

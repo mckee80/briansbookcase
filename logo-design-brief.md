@@ -1,7 +1,7 @@
 # Logo Design Brief - Brian's Bookcase
 
 ## Project Overview
-Brian's Bookcase is a nonprofit organization that supports suicide prevention through donated fiction. We need a professional logo that reflects our literary mission while conveying warmth, compassion, and hope.
+Brian's Bookcase is a nonprofit organization that supports mental health through donated fiction. We need a professional logo that reflects our literary mission while conveying warmth, compassion, and hope.
 
 ---
 
@@ -11,12 +11,12 @@ Brian's Bookcase is a nonprofit organization that supports suicide prevention th
 **Brian's Bookcase**
 
 ### Taglines (choose one or use for inspiration)
-- "Supporting suicide prevention through the power of donated fiction"
+- "Supporting mental health through the power of donated fiction"
 - "Building Hope One Story at a Time"
 - "Read Stories, Change Lives"
 
 ### Mission
-A charitable platform where readers access donated fiction through membership contributions that fund mental health and suicide prevention organizations.
+A charitable platform where readers access donated fiction through membership contributions that fund mental health and crisis intervention organizations.
 
 ---
 
@@ -181,7 +181,7 @@ Think: Independent bookshop, cozy library, classic literature, warm study, vinta
 ## Additional Notes
 
 ### Organization Background
-Brian's Bookcase was founded in memory of Brian Paul McKee, who struggled with mental health. The organization transforms donated fiction into a force for good, with 100% of membership fees supporting suicide prevention and mental health services.
+Brian's Bookcase was founded in memory of Brian Paul McKee, who struggled with mental health. The organization transforms donated fiction into a force for good, with 100% of membership fees supporting mental health and crisis intervention services.
 
 ### Target Audience
 - Book lovers and readers

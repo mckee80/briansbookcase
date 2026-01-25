@@ -124,7 +124,7 @@ After deployment, you need to update the admin email whitelist:
 
 ## Step 5: Custom Domain (Optional)
 
-To use your own domain (e.g., `briansbookcase.com`):
+To use your own domain (e.g., `briansbookcase.org`):
 
 1. Buy a domain from a registrar (Namecheap, GoDaddy, etc.)
 2. In Vercel, go to your project → **Settings** → **Domains**

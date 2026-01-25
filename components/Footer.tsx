@@ -6,7 +6,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold font-garamond mb-4">Brian&apos;s Bookcase</h3>
             <p className="font-crimson text-sm">
-              Supporting suicide prevention through the power of donated fiction.
+              Supporting mental health through the power of donated fiction.
             </p>
           </div>
           <div>

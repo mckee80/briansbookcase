@@ -27,7 +27,7 @@ export default function Authors() {
           Our Authors
         </h1>
         <p className="font-crimson text-lg mb-8 text-gray-700">
-          Meet the generous authors who have donated their work to support suicide prevention.
+          Meet the generous authors who have donated their work to support mental health.
           Their contributions make our mission possible.
         </p>
 
@@ -83,7 +83,7 @@ export default function Authors() {
           </h2>
           <p className="font-crimson text-lg text-primary mb-6 max-w-2xl mx-auto">
             Join our community of compassionate authors making a difference. Donate your fiction
-            to support suicide prevention and help us reach more readers.
+            to support mental health and help us reach more readers.
           </p>
           <div className="space-y-4 mb-6">
             <div className="bg-parchment rounded-lg border border-border p-4 max-w-md mx-auto">

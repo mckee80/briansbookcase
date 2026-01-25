@@ -89,7 +89,7 @@ export const mockProducts: Product[] = [
   {
     id: "3",
     name: "Literary Supporter Pin",
-    description: "Enamel pin showing your support for suicide prevention through literature.",
+    description: "Enamel pin showing your support for mental health through literature.",
     price: 6.99,
     image: "/images/products/pin.jpg",
     category: "Merchandise",

@@ -26,7 +26,8 @@
       "Bash(timeout /t 3 /nobreak)",
       "Bash(cmd /c \"rd /s /q .next 2>nul\")",
       "Bash(powershell -Command:*)",
-      "Bash(gh repo view:*)"
+      "Bash(gh repo view:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
