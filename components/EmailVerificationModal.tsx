@@ -1,6 +1,12 @@
 'use client';
 
-import { X, Mail, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { X, Mail, CheckCircle, RefreshCw } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface EmailVerificationModalProps {
   isOpen: boolean;
@@ -13,6 +19,36 @@ export default function EmailVerificationModal({
   onClose,
   email,
 }: EmailVerificationModalProps) {
+  const [isResending, setIsResending] = useState(false);
+  const [resendStatus, setResendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [resendMessage, setResendMessage] = useState('');
+
+  const handleResendEmail = async () => {
+    setIsResending(true);
+    setResendStatus('idle');
+    setResendMessage('');
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+
+      if (error) {
+        setResendStatus('error');
+        setResendMessage(error.message);
+      } else {
+        setResendStatus('success');
+        setResendMessage('Verification email sent! Check your inbox.');
+      }
+    } catch {
+      setResendStatus('error');
+      setResendMessage('Failed to resend email. Please try again.');
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -74,12 +110,35 @@ export default function EmailVerificationModal({
             Can&apos;t find the email? Check your spam folder or wait a few minutes for it to arrive.
           </p>
 
-          <button
-            onClick={onClose}
-            className="w-full px-4 py-3 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-crimson font-semibold"
-          >
-            Got It
-          </button>
+          {/* Resend Status Message */}
+          {resendStatus === 'success' && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+              <p className="font-crimson text-sm text-green-700">{resendMessage}</p>
+            </div>
+          )}
+          {resendStatus === 'error' && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+              <p className="font-crimson text-sm text-red-700">{resendMessage}</p>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <button
+              onClick={handleResendEmail}
+              disabled={isResending}
+              className="w-full px-4 py-3 bg-gray-100 text-primary rounded-lg hover:bg-gray-200 transition-colors font-crimson font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw size={18} className={isResending ? 'animate-spin' : ''} />
+              {isResending ? 'Sending...' : 'Resend Verification Email'}
+            </button>
+
+            <button
+              onClick={onClose}
+              className="w-full px-4 py-3 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-crimson font-semibold"
+            >
+              Got It
+            </button>
+          </div>
         </div>
       </div>
     </div>
