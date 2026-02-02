@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Navbar, Footer, AuthProvider } from "@/components";
 import { DataProvider } from "@/contexts/DataContext";
+import LaunchBanner from "@/components/LaunchBanner";
 
 export const metadata: Metadata = {
   title: "Brian's Bookcase - Supporting Mental Health Through Stories",
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body className="antialiased flex flex-col min-h-screen">
         <AuthProvider>
           <DataProvider>
+            <LaunchBanner />
             <Navbar />
             {children}
             <Footer />
