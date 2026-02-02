@@ -5,15 +5,17 @@ import { X, Rocket } from 'lucide-react';
 
 const BANNER_DISMISSED_KEY = 'launch-banner-dismissed';
 
+// To reset the banner (for testing), run in browser console:
+// localStorage.removeItem('launch-banner-dismissed')
+
 export default function LaunchBanner() {
-  const [isVisible, setIsVisible] = useState(false);
+  // Start with null to indicate "not yet determined"
+  const [isVisible, setIsVisible] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Check if banner was previously dismissed
     const dismissed = localStorage.getItem(BANNER_DISMISSED_KEY);
-    if (!dismissed) {
-      setIsVisible(true);
-    }
+    setIsVisible(!dismissed);
   }, []);
 
   const handleDismiss = () => {
@@ -21,7 +23,8 @@ export default function LaunchBanner() {
     localStorage.setItem(BANNER_DISMISSED_KEY, 'true');
   };
 
-  if (!isVisible) return null;
+  // Don't render anything until we've checked localStorage
+  if (isVisible === null || isVisible === false) return null;
 
   return (
     <div className="bg-gradient-to-r from-accent/90 to-primary/90 text-white py-3 px-4 relative">
