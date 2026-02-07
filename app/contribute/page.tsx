@@ -39,12 +39,13 @@ export default function Contribute() {
             <p>
               Wanting to support organizations tackling mental health issues might be the only thing our monthly donors have in common. As such, we&apos;re hoping to have a wide variety of genres in our stories.
             </p>
-            <p>
-              We value broad appeal, which means we probably won&apos;t prioritize stories that are graphically violent, political, or explicit. We appreciate that there is great work done in those areas, but it is not what we are looking for here.
-            </p>
             <div className="bg-parchment rounded-lg border border-border p-6 my-6">
               <h3 className="font-bold font-garamond text-primary mb-3 text-lg">Submission Guidelines:</h3>
               <ul className="space-y-2 text-gray-700">
+                <li className="flex items-start">
+                  <span className="text-accent mr-2 font-bold">•</span>
+                  <span><strong>Type:</strong> Fiction — all genres welcome (literary, mystery, sci-fi, romance, etc.)</span>
+                </li>
                 <li className="flex items-start">
                   <span className="text-accent mr-2 font-bold">•</span>
                   <span><strong>Length:</strong> 2,000 - 7,000 words (flexible guideline)</span>
