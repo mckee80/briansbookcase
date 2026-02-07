@@ -102,14 +102,14 @@ export default function Contribute() {
             We&apos;d love to hear from you! Get in touch with us to submit your work or ask any questions about the submission process.
           </p>
           <a
-            href="mailto:submissions@briansbookcase.org"
+            href="mailto:mckee80@gmail.com"
             className="inline-flex items-center gap-3 px-8 py-4 bg-white text-accent rounded-lg hover:bg-parchment transition-colors font-semibold text-lg shadow-md"
           >
             <Mail size={24} />
             Contact Us to Submit
           </a>
           <p className="font-crimson text-sm mt-6 opacity-90">
-            Or email us at: <strong>submissions@briansbookcase.org</strong>
+            Or email us at: <strong>mckee80@gmail.com</strong>
           </p>
         </div>
 
