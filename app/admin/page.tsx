@@ -48,6 +48,7 @@ export default function AdminPage() {
     author: string;
     download_count: number;
     send_count: number;
+    read_count: number;
     total_activity: number;
   }>>([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
@@ -940,6 +941,7 @@ export default function AdminPage() {
                                     <th className="text-left py-3 px-4 font-garamond text-primary">Author</th>
                                     <th className="text-center py-3 px-4 font-garamond text-primary">Downloads</th>
                                     <th className="text-center py-3 px-4 font-garamond text-primary">Sends</th>
+                                    <th className="text-center py-3 px-4 font-garamond text-primary">Reads</th>
                                     <th className="text-center py-3 px-4 font-garamond text-primary">Total</th>
                                   </tr>
                                 </thead>
@@ -953,6 +955,9 @@ export default function AdminPage() {
                                       </td>
                                       <td className="py-3 px-4 font-crimson text-center text-accent font-bold">
                                         {book.send_count}
+                                      </td>
+                                      <td className="py-3 px-4 font-crimson text-center text-accent font-bold">
+                                        {book.read_count}
                                       </td>
                                       <td className="py-3 px-4 font-crimson text-center text-primary font-bold">
                                         {book.total_activity}
