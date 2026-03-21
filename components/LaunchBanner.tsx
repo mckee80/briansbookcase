@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Rocket } from 'lucide-react';
+import Link from 'next/link';
 
 const BANNER_DISMISSED_KEY = 'launch-banner-dismissed';
 
@@ -38,13 +39,10 @@ export default function LaunchBanner() {
           <span className="sm:hidden">
             We&apos;re looking for short story submissions.
           </span>
-          {' '}Email{' '}
-          <a
-            href="mailto:mckee80@gmail.com"
-            className="underline hover:no-underline font-semibold"
-          >
-            mckee80@gmail.com
-          </a>
+          {' '}
+          <Link href="/contribute" className="underline hover:no-underline font-semibold">
+            Submit your story
+          </Link>
         </p>
       </div>
       <button
