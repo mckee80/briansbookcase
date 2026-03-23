@@ -115,10 +115,10 @@ export default function Contribute() {
           </h2>
           <div className="font-crimson text-base md:text-lg leading-relaxed text-primary space-y-4">
             <p>
-              Donated art is the engine that drives this train. We understand that art is personal and we will take our safeguarding duties seriously while your work is here. The only designs we have on your work is to make it available to be enjoyed by our monthly donators.
+              Donated stories are the engine that drives this train. We understand that stories are personal and we will take our safeguarding duties seriously while your work is here. The only designs we have on your work is to make it available to be enjoyed by our monthly donators.
             </p>
             <p>
-              We are thrilled to have these works on our site and we don&apos;t require donated art to be original or exclusive (reprints, etc are totally fine). Each author will have a bio section with optional link(s) to where to find other work by the author.
+              We are thrilled to have these works on our site and we don&apos;t require donated stories to be original or exclusive (reprints, etc are totally fine). Each author will have a bio section with optional link(s) to where to find other work by the author.
             </p>
           </div>
         </section>
@@ -156,17 +156,29 @@ export default function Contribute() {
           </div>
         </section>
 
-        {/* What Happens After Submission Section */}
+        {/* Where Your Work Lives Section */}
         <section className="bg-white rounded border-2 border-border p-8 md:p-12 mb-8 shadow-[0_2px_12px_rgba(44,24,16,0.12)] relative page-corner">
           <h2 className="text-2xl md:text-3xl font-bold font-garamond mb-6 text-primary border-b-2 border-border pb-3">
-            What Happens After You Submit a Story
+            Where Your Work Lives
           </h2>
           <div className="font-crimson text-base md:text-lg leading-relaxed text-primary space-y-4">
             <p>
-              The team here will review your submission. We will let you know if it was selected (or not) within 2 months. If it is selected, we will also let you know when it will appear on the site.
+              Accepted stories go into the members-only library — accessible to subscribers, not to the open web. This keeps your work out of reach of most scrapers and bots, and means the people reading it are there because they chose to support the mission. We publish a minimum of one new story per month.
+            </p>
+          </div>
+        </section>
+
+        {/* What to Expect Section */}
+        <section className="bg-white rounded border-2 border-border p-8 md:p-12 mb-8 shadow-[0_2px_12px_rgba(44,24,16,0.12)] relative page-corner">
+          <h2 className="text-2xl md:text-3xl font-bold font-garamond mb-6 text-primary border-b-2 border-border pb-3">
+            What to Expect
+          </h2>
+          <div className="font-crimson text-base md:text-lg leading-relaxed text-primary space-y-4">
+            <p>
+              We read everything we receive. We&apos;ll respond within 6 weeks with one of three outcomes: accepted for a specific upcoming month, accepted and held for future publication, or not accepted. Either way, you&apos;ll hear back.
             </p>
             <p>
-              We are not sure how many we will be publishing per month. So it is possible that your work is accepted, but doesn&apos;t appear on the site right away.
+              If your story is accepted, we&apos;ll follow up to ask for a short bio and a brief description of the story. These appear on your author card on our Authors page, along with any links you&apos;d like to include — your website, social media, other publications, wherever readers can find more of your work.
             </p>
           </div>
         </section>
@@ -199,7 +211,7 @@ export default function Contribute() {
                 Story Submitted!
               </h3>
               <p className="font-crimson text-lg text-green-700">
-                Thank you for your submission! We&apos;ll review it and get back to you within 2 months.
+                Thank you for your submission! We&apos;ll review it and get back to you within 6 weeks.
               </p>
               <button
                 onClick={() => setSuccess(false)}
