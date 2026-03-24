@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AdminRoute, useAuth } from '@/components';
+import AdminRoute from '@/components/AdminRoute';
+import { useAuth } from '@/components/AuthProvider';
 import { useData } from '@/contexts/DataContext';
 import { extractEbookMetadata } from '@/lib/extractEbookCover';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';

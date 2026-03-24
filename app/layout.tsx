@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import { Navbar, Footer, AuthProvider } from "@/components";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { AuthProvider } from "@/components/AuthProvider";
 import { DataProvider } from "@/contexts/DataContext";
 import LaunchBanner from "@/components/LaunchBanner";
 import { TooltipProvider } from "@/components/ui/tooltip";

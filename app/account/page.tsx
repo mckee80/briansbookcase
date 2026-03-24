@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ProtectedRoute, useAuth } from '@/components';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/lib/supabase';
 
 const MEMBERSHIP_TIERS = [
