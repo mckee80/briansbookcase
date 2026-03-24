@@ -4,10 +4,8 @@ import "./globals.css";
 import { Navbar, Footer, AuthProvider } from "@/components";
 import { DataProvider } from "@/contexts/DataContext";
 import LaunchBanner from "@/components/LaunchBanner";
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Brian's Bookcase - Supporting Mental Health Through Stories",
@@ -20,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en">
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap"
@@ -43,10 +41,13 @@ export default function RootLayout({
       <body className="antialiased flex flex-col min-h-screen">
         <AuthProvider>
           <DataProvider>
-            <LaunchBanner />
-            <Navbar />
-            {children}
-            <Footer />
+            <TooltipProvider>
+              <LaunchBanner />
+              <Navbar />
+              {children}
+              <Footer />
+              <Toaster />
+            </TooltipProvider>
           </DataProvider>
         </AuthProvider>
       </body>
