@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     // Send email with attachment
     const { error: emailError } = await resend.emails.send({
       from: 'library@mail.briansbookcase.org',
-      to: 'sean@briansbookcase.org',
+      to: 'mckee80@gmail.com',
       subject: `Story Submission from ${authorName}`,
       html: `
         <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; padding: 20px;">
