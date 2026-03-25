@@ -8,13 +8,13 @@ export default function Home() {
         {/* Hero Section */}
         <section className="text-center mb-24">
           <div className="max-w-4xl mx-auto mb-16">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-garamond mb-2 text-primary leading-tight">
+            <h1 className="animate-fade-in-up text-4xl md:text-6xl lg:text-7xl font-bold font-garamond mb-2 text-primary leading-tight">
               Read Stories, Change Lives
             </h1>
-            <p className="text-xl md:text-3xl lg:text-4xl font-light font-garamond italic text-gray-600 mb-8">
+            <p className="animate-fade-in-up delay-100 text-xl md:text-3xl lg:text-4xl font-light font-garamond italic text-gray-600 mb-8">
               Building Hope One Story at a Time
             </p>
-            <div className="text-left max-w-3xl mx-auto space-y-6 mb-12 font-crimson text-lg leading-relaxed text-primary bg-white p-10 rounded-lg border-2 border-border shadow-lg relative page-corner">
+            <div className="animate-fade-in-up delay-200 text-left max-w-3xl mx-auto space-y-6 mb-12 font-crimson text-lg leading-relaxed text-primary bg-white p-10 rounded-lg border-2 border-border shadow-lg relative page-corner">
               <p className="drop-cap">
                 Every story you read here supports mental health programs. Our library features donated fiction from talented writers—100% of membership contributions fund crisis intervention services and mental wellness programs that save lives.
               </p>
@@ -28,9 +28,9 @@ export default function Home() {
                 We believe that a LARGE number of people, doing something SMALL consistently, can lead to GREAT things.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="animate-fade-in-up delay-300 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/membership">
-                <button className="px-8 py-4 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold text-lg">
+                <button className="cta-pulse px-8 py-4 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold text-lg">
                   Join Us!
                 </button>
               </Link>

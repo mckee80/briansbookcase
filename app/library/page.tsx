@@ -96,9 +96,9 @@ export default function Library() {
           {ebooks.map((ebook) => (
             <div
               key={ebook.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 border-2 border-border"
+              className="book-card bg-white rounded-lg shadow-md overflow-hidden border-2 border-border"
             >
-              <div className="h-80 relative bg-gray-100 flex items-center justify-center">
+              <div className="book-cover h-80 relative bg-gray-100 flex items-center justify-center">
                 {ebook.coverImage ? (
                   <img
                     src={ebook.coverImage}
@@ -169,8 +169,12 @@ export default function Library() {
 
         {ebooks.length === 0 && (
           <div className="text-center py-16">
-            <p className="font-crimson text-xl text-gray-600">
-              No stories available yet. Check back soon!
+            <div className="text-6xl mb-4">📖</div>
+            <p className="font-garamond text-2xl text-primary mb-2">
+              We&apos;re stocking the shelves...
+            </p>
+            <p className="font-crimson text-lg text-gray-600">
+              New stories are on their way. Check back soon!
             </p>
           </div>
         )}
