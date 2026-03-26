@@ -118,7 +118,7 @@ export default function Contribute() {
               Donated stories are the engine that drives this train. We understand that stories are personal and we will take our safeguarding duties seriously while your work is here. The only designs we have on your work is to make it available to be enjoyed by our monthly donators.
             </p>
             <p>
-              We are thrilled to have these works on our site and we don&apos;t require donated stories to be original or exclusive (reprints, etc are totally fine). Each author will have a bio section with optional link(s) to where to find other work by the author.
+              We are thrilled to have these works on our site and we don&apos;t require donated stories to be original or exclusive (reprints, simultaneous submissions, etc are totally fine). Each author will have a bio section with optional link(s) to where to find other work by the author.
             </p>
           </div>
         </section>
