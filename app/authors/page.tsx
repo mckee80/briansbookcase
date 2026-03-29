@@ -30,11 +30,9 @@ export default function Authors() {
           Meet the generous authors who have donated their work to support mental health.
           Their contributions make our mission possible.
         </p>
-        <p className="font-crimson text-base mb-8">
-          <a href="#become-author" className="text-accent hover:underline font-semibold">
-            Want to become a contributing author? &darr;
-          </a>
-        </p>
+        <a href="#become-author" className="inline-flex items-center gap-2 px-5 py-2.5 mb-8 bg-accent/10 text-accent border border-accent/30 rounded-full font-crimson font-semibold hover:bg-accent hover:text-white transition-colors">
+          Want to become a contributing author? &darr;
+        </a>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {authors.map((author) => (
