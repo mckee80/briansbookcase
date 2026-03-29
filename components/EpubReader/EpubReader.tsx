@@ -129,6 +129,21 @@ export default function EpubReader({
   const handleRenditionReady = (rendition: any) => {
     renditionRef.current = rendition;
 
+    // Fix Calibre conversion artifacts that hide content
+    rendition.hooks.content.register((contents: any) => {
+      const doc = contents.document;
+      const style = doc.createElement('style');
+      style.textContent = `
+        .frame_, [class*="frame"] {
+          height: auto !important;
+          width: auto !important;
+          overflow: visible !important;
+          float: none !important;
+        }
+      `;
+      doc.head.appendChild(style);
+    });
+
     // Apply settings
     applyReaderSettings(rendition, settings);
 
