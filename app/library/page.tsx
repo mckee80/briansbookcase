@@ -98,12 +98,12 @@ export default function Library() {
               key={ebook.id}
               className="book-card bg-white rounded-lg shadow-md overflow-hidden border-2 border-border"
             >
-              <div className="book-cover h-80 relative bg-gray-100 flex items-center justify-center">
+              <div className="book-cover relative bg-gray-100 flex items-center justify-center" style={{ aspectRatio: '2/3' }}>
                 {ebook.coverImage ? (
                   <img
                     src={ebook.coverImage}
                     alt={`Cover of ${ebook.title}`}
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain bg-parchment"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">

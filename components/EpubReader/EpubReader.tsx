@@ -160,6 +160,11 @@ export default function EpubReader({
       setToc(tocItems);
     });
 
+    // Generate locations for progress tracking
+    rendition.book.ready.then(() => {
+      rendition.book.locations.generate(1600);
+    });
+
     // Auto-display the book if no location is set
     if (!location) {
       rendition.display();
