@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { extractEbookCover } from '@/lib/extractEbookCover';
+import { extractEbookCover, extractEbookMetadata } from '@/lib/extractEbookCover';
 
 // Create Supabase client with proper auth persistence
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
@@ -24,6 +24,7 @@ export interface Ebook {
   description?: string;
   coverImage?: string;
   pageCount?: number;
+  wordCount?: number;
   downloadUrl?: string;
 }
 
@@ -116,6 +117,7 @@ function mapDbToEbook(row: any): Ebook {
     description: row.description || undefined,
     coverImage: row.cover_image || undefined,
     pageCount: row.page_count || undefined,
+    wordCount: row.word_count || undefined,
     downloadUrl: row.download_url || undefined,
   };
 }
@@ -214,6 +216,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     try {
       let downloadUrl = ebook.downloadUrl || null;
       let coverImageUrl = ebook.coverImage || null;
+      let wordCount = ebook.wordCount || null;
+
+      // Extract word count from EPUB file
+      if (file && file.name.toLowerCase().endsWith('.epub')) {
+        const metadata = await extractEbookMetadata(file);
+        if (metadata.wordCount) {
+          wordCount = metadata.wordCount;
+        }
+      }
 
       // Upload ebook file to Supabase Storage if provided
       if (file) {
@@ -282,6 +293,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             description: ebook.description || null,
             cover_image: coverImageUrl,
             page_count: ebook.pageCount || null,
+            word_count: wordCount,
             download_url: downloadUrl,
           },
         ])

@@ -4,6 +4,7 @@ export interface EbookMetadata {
   title?: string;
   author?: string;
   coverImage?: File;
+  wordCount?: number;
 }
 
 /**
@@ -77,6 +78,9 @@ export async function extractEbookMetadata(file: File): Promise<EbookMetadata> {
       metadata.coverImage = coverImage;
     }
 
+    // Extract word count from HTML/XHTML content files
+    metadata.wordCount = await extractWordCount(zip);
+
     console.log('Extracted metadata:', metadata);
     return metadata;
   } catch (error) {
@@ -101,6 +105,31 @@ export async function extractEbookCover(file: File): Promise<File | null> {
     console.error('Error extracting cover from EPUB:', error);
     return null;
   }
+}
+
+/**
+ * Internal helper to extract word count from EPUB content files
+ */
+async function extractWordCount(zip: JSZip): Promise<number> {
+  let totalWords = 0;
+
+  const contentFiles: JSZip.JSZipObject[] = [];
+  zip.forEach((relativePath, file) => {
+    const lowerPath = relativePath.toLowerCase();
+    if ((lowerPath.endsWith('.html') || lowerPath.endsWith('.xhtml') || lowerPath.endsWith('.htm')) && !file.dir) {
+      contentFiles.push(file);
+    }
+  });
+
+  for (const file of contentFiles) {
+    const html = await file.async('text');
+    // Strip HTML tags and count words
+    const text = html.replace(/<[^>]*>/g, ' ').replace(/&[^;]+;/g, ' ');
+    const words = text.split(/\s+/).filter(w => w.length > 0);
+    totalWords += words.length;
+  }
+
+  return totalWords;
 }
 
 /**
