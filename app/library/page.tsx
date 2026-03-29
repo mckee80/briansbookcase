@@ -126,13 +126,15 @@ export default function Library() {
                     {ebook.description}
                   </p>
                 )}
-                <div className="mb-3 flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2 flex-wrap">
                   <span className="text-xs text-gray-500 font-crimson">
                     {ebook.genre} • {ebook.year}
                   </span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent border border-accent/20">
-                    Shorter
-                  </span>
+                  {ebook.pageCount != null && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent border border-accent/20 font-crimson">
+                      Length: {ebook.pageCount <= 5 ? 'A Moment' : ebook.pageCount <= 15 ? 'A Sitting' : 'A Journey'}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <button
