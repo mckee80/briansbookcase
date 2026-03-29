@@ -74,6 +74,7 @@ export default function AdminPage() {
     description: '',
     coverImage: ''
   });
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [showAddEbook, setShowAddEbook] = useState(false);
   const [ebookFile, setEbookFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
@@ -119,10 +120,10 @@ export default function AdminPage() {
 
   // Ebook management
   const handleAddEbook = async () => {
-    if (newEbook.title && newEbook.author && newEbook.genre && ebookFile) {
+    if (newEbook.title && newEbook.author && selectedGenres.length > 0 && ebookFile) {
       setUploading(true);
       try {
-        await addEbook(newEbook, ebookFile, coverImageFile || undefined);
+        await addEbook({ ...newEbook, genre: selectedGenres.join(', ') }, ebookFile, coverImageFile || undefined);
         setNewEbook({
           title: '',
           author: '',
@@ -131,6 +132,7 @@ export default function AdminPage() {
           description: '',
           coverImage: ''
         });
+        setSelectedGenres([]);
         setEbookFile(null);
         setCoverImageFile(null);
         setShowAddEbook(false);
@@ -455,13 +457,25 @@ export default function AdminPage() {
                           onChange={(e) => setNewEbook({ ...newEbook, author: e.target.value })}
                           className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                         />
-                        <input
-                          type="text"
-                          placeholder="Genre *"
-                          value={newEbook.genre}
-                          onChange={(e) => setNewEbook({ ...newEbook, genre: e.target.value })}
-                          className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
-                        />
+                        <div>
+                          <p className="text-sm text-gray-600 mb-2">Genre(s) *</p>
+                          <div className="flex flex-wrap gap-2">
+                            {['Literary Fiction', 'Mystery/Thriller', 'Science Fiction', 'Fantasy', 'Romance', 'Horror', 'Historical Fiction', 'Adventure', 'Humor/Satire', 'Other'].map(genre => (
+                              <button
+                                key={genre}
+                                type="button"
+                                onClick={() => setSelectedGenres(prev => prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre])}
+                                className={`px-3 py-1 rounded-full border text-sm transition-colors ${
+                                  selectedGenres.includes(genre)
+                                    ? 'bg-accent text-white border-accent'
+                                    : 'bg-white text-gray-700 border-gray-300 hover:border-accent'
+                                }`}
+                              >
+                                {selectedGenres.includes(genre) && '✓ '}{genre}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                         <input
                           type="number"
                           placeholder="Year"
