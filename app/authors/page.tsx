@@ -70,7 +70,7 @@ export default function Authors() {
 
               {author.websiteUrl && (
                 <p className="font-crimson text-sm mb-4">
-                  <a href={author.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">
+                  <a href={author.websiteUrl.startsWith('http') ? author.websiteUrl : `https://${author.websiteUrl}`} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">
                     More work by {author.name} &rarr;
                   </a>
                 </p>
