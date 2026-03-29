@@ -79,6 +79,7 @@ export default function AdminPage() {
   const [editingEbook, setEditingEbook] = useState<number | null>(null);
   const [editEbook, setEditEbook] = useState({ title: '', author: '', genre: '', year: 0, description: '' });
   const [editGenres, setEditGenres] = useState<string[]>([]);
+  const [editCoverFile, setEditCoverFile] = useState<File | null>(null);
   const [ebookFile, setEbookFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -177,11 +178,32 @@ export default function AdminPage() {
   const handleUpdateEbook = async () => {
     if (editingEbook === null) return;
     try {
+      let coverImageUrl: string | undefined;
+
+      if (editCoverFile) {
+        const fileExt = editCoverFile.name.split('.').pop();
+        const coverFileName = `cover-${Date.now()}-${editEbook.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('ebooks')
+          .upload(coverFileName, editCoverFile, { cacheControl: '3600', upsert: false });
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('ebooks')
+          .getPublicUrl(coverFileName);
+
+        coverImageUrl = urlData.publicUrl;
+      }
+
       await updateEbook(editingEbook, {
         ...editEbook,
         genre: editGenres.join(', '),
+        ...(coverImageUrl ? { coverImage: coverImageUrl } : {}),
       });
       setEditingEbook(null);
+      setEditCoverFile(null);
     } catch (error) {
       alert('Failed to update ebook. Please try again.');
       console.error(error);
@@ -636,6 +658,15 @@ export default function AdminPage() {
                                 placeholder="Description"
                               />
                             </div>
+                            <div>
+                              <label className="block text-sm text-gray-600 mb-1">Update Cover Image</label>
+                              <input
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.webp"
+                                onChange={(e) => setEditCoverFile(e.target.files?.[0] || null)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                              />
+                            </div>
                             <div className="flex gap-2">
                               <button
                                 onClick={handleUpdateEbook}
@@ -644,7 +675,7 @@ export default function AdminPage() {
                                 Save
                               </button>
                               <button
-                                onClick={() => setEditingEbook(null)}
+                                onClick={() => { setEditingEbook(null); setEditCoverFile(null); }}
                                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors text-sm"
                               >
                                 Cancel
