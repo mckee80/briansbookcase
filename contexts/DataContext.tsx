@@ -408,6 +408,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
           {
             name: author.name,
             email: author.email || null,
+            bio: author.bio || null,
+            website_url: author.websiteUrl || null,
             books_count: initialBookCount,
           },
         ])

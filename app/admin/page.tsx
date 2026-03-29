@@ -84,7 +84,7 @@ export default function AdminPage() {
   const [uploading, setUploading] = useState(false);
 
   // Author state
-  const [newAuthor, setNewAuthor] = useState({ name: '', bio: '', email: '' });
+  const [newAuthor, setNewAuthor] = useState({ name: '', bio: '', email: '', websiteUrl: '' });
   const [showAddAuthor, setShowAddAuthor] = useState(false);
   const [authorPhotoFile, setAuthorPhotoFile] = useState<File | null>(null);
   const [editingAuthor, setEditingAuthor] = useState<number | null>(null);
@@ -195,7 +195,8 @@ export default function AdminPage() {
         await addAuthor({
           name: newAuthor.name.trim(),
           email: newAuthor.email || '',
-          bio: newAuthor.bio || undefined
+          bio: newAuthor.bio || undefined,
+          websiteUrl: newAuthor.websiteUrl || undefined
         });
 
         // If a photo was uploaded, update the author with the photo
@@ -206,7 +207,7 @@ export default function AdminPage() {
           }
         }
 
-        setNewAuthor({ name: '', bio: '', email: '' });
+        setNewAuthor({ name: '', bio: '', email: '', websiteUrl: '' });
         setAuthorPhotoFile(null);
         setShowAddAuthor(false);
       } catch (error) {
@@ -727,6 +728,15 @@ export default function AdminPage() {
                         />
                       </div>
                       <div className="mb-4">
+                        <input
+                          type="url"
+                          placeholder="Website / other work URL (optional)"
+                          value={newAuthor.websiteUrl}
+                          onChange={(e) => setNewAuthor({ ...newAuthor, websiteUrl: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                      </div>
+                      <div className="mb-4">
                         <label className="block text-sm font-semibold font-crimson text-primary mb-2">
                           Author Photo (optional)
                         </label>
@@ -752,7 +762,7 @@ export default function AdminPage() {
                         <button
                           onClick={() => {
                             setShowAddAuthor(false);
-                            setNewAuthor({ name: '', bio: '', email: '' });
+                            setNewAuthor({ name: '', bio: '', email: '', websiteUrl: '' });
                             setAuthorPhotoFile(null);
                           }}
                           className="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
@@ -815,7 +825,7 @@ export default function AdminPage() {
                               <button
                                 onClick={() => {
                                   setEditingAuthor(null);
-                                  setEditAuthorData({ bio: '', email: '', photoUrl: '' });
+                                  setEditAuthorData({ bio: '', email: '', photoUrl: '', websiteUrl: '' });
                                   setAuthorPhotoFile(null);
                                 }}
                                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors text-sm"
