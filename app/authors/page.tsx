@@ -26,9 +26,14 @@ export default function Authors() {
         <h1 className="text-4xl font-bold font-garamond mb-6 text-primary">
           Our Authors
         </h1>
-        <p className="font-crimson text-lg mb-8 text-gray-700">
+        <p className="font-crimson text-lg mb-4 text-gray-700">
           Meet the generous authors who have donated their work to support mental health.
           Their contributions make our mission possible.
+        </p>
+        <p className="font-crimson text-base mb-8">
+          <a href="#become-author" className="text-accent hover:underline font-semibold">
+            Want to become a contributing author? &darr;
+          </a>
         </p>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -77,7 +82,7 @@ export default function Authors() {
           ))}
         </div>
 
-        <div className="bg-white rounded-lg border-2 border-border shadow-lg p-8 text-center relative page-corner">
+        <div id="become-author" className="bg-white rounded-lg border-2 border-border shadow-lg p-8 text-center relative page-corner">
           <h2 className="text-3xl font-bold font-garamond mb-4 text-primary border-b-2 border-border pb-3">
             Are You an Author?
           </h2>
