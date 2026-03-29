@@ -15,6 +15,7 @@ export default function Authors() {
       email: authorInfo?.email || '',
       bio: authorInfo?.bio || '',
       photoUrl: authorInfo?.photoUrl || '',
+      websiteUrl: authorInfo?.websiteUrl || '',
       books: books,
       bookCount: books.length,
     };
@@ -64,6 +65,14 @@ export default function Authors() {
               {author.bio && (
                 <p className="font-crimson text-gray-700 mb-4 italic border-l-2 border-accent/30 pl-4">
                   {author.bio}
+                </p>
+              )}
+
+              {author.websiteUrl && (
+                <p className="font-crimson text-sm mb-4">
+                  <a href={author.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">
+                    More work by {author.name} &rarr;
+                  </a>
                 </p>
               )}
 

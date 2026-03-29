@@ -34,6 +34,7 @@ export interface Author {
   email: string;
   bio?: string;
   photoUrl?: string;
+  websiteUrl?: string;
   booksCount: number;
 }
 
@@ -42,6 +43,7 @@ interface DataContextType {
   authors: Author[];
   loading: boolean;
   addEbook: (ebook: Omit<Ebook, 'id'>, file?: File, coverImage?: File) => Promise<void>;
+  updateEbook: (id: number, updates: Partial<Omit<Ebook, 'id'>>) => Promise<void>;
   removeEbook: (id: number) => Promise<void>;
   addAuthor: (author: Omit<Author, 'id' | 'booksCount'>) => Promise<void>;
   updateAuthor: (id: number, updates: Partial<Omit<Author, 'id' | 'booksCount'>>, photoFile?: File) => Promise<void>;
@@ -130,6 +132,7 @@ function mapDbToAuthor(row: any): Author {
     email: row.email || '',
     bio: row.bio || undefined,
     photoUrl: row.photo_url || undefined,
+    websiteUrl: row.website_url || undefined,
     booksCount: row.books_count || 0,
   };
 }
@@ -318,6 +321,32 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateEbook = async (id: number, updates: Partial<Omit<Ebook, 'id'>>) => {
+    try {
+      const dbUpdates: any = {};
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.author !== undefined) dbUpdates.author = updates.author;
+      if (updates.genre !== undefined) dbUpdates.genre = updates.genre;
+      if (updates.year !== undefined) dbUpdates.year = updates.year;
+      if (updates.description !== undefined) dbUpdates.description = updates.description;
+      if (updates.pageCount !== undefined) dbUpdates.page_count = updates.pageCount;
+      if (updates.wordCount !== undefined) dbUpdates.word_count = updates.wordCount;
+      if (updates.coverImage !== undefined) dbUpdates.cover_image = updates.coverImage;
+      if (updates.downloadUrl !== undefined) dbUpdates.download_url = updates.downloadUrl;
+
+      const { error } = await supabase
+        .from('ebooks')
+        .update(dbUpdates)
+        .eq('id', id);
+
+      if (error) throw error;
+      await refreshData();
+    } catch (error) {
+      console.error('Error updating ebook:', error);
+      throw error;
+    }
+  };
+
   const removeEbook = async (id: number) => {
     try {
       // First, get the ebook to find its download URL
@@ -436,6 +465,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           email: updates.email !== undefined ? updates.email : undefined,
           bio: updates.bio !== undefined ? updates.bio : undefined,
           photo_url: photoUrl !== undefined ? photoUrl : undefined,
+          website_url: updates.websiteUrl !== undefined ? updates.websiteUrl : undefined,
         })
         .eq('id', id);
 
@@ -484,6 +514,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         authors,
         loading,
         addEbook,
+        updateEbook,
         removeEbook,
         addAuthor,
         updateAuthor,

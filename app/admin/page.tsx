@@ -6,7 +6,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { useData } from '@/contexts/DataContext';
 import { extractEbookMetadata } from '@/lib/extractEbookCover';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Book, Users, Trash2, Plus, PieChartIcon } from 'lucide-react';
+import { Book, Users, Trash2, Plus, PieChartIcon, Pencil, X } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
 // Create Supabase client for admin operations
@@ -32,7 +32,7 @@ const tierNames: Record<string, string> = {
 
 export default function AdminPage() {
   const { user } = useAuth();
-  const { ebooks, authors, addEbook, removeEbook, addAuthor, updateAuthor, removeAuthor } = useData();
+  const { ebooks, authors, addEbook, updateEbook, removeEbook, addAuthor, updateAuthor, removeAuthor } = useData();
   const [activeTab, setActiveTab] = useState<'ebooks' | 'authors' | 'analytics' | 'users'>('ebooks');
 
   // Membership data state
@@ -76,6 +76,9 @@ export default function AdminPage() {
   });
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [showAddEbook, setShowAddEbook] = useState(false);
+  const [editingEbook, setEditingEbook] = useState<number | null>(null);
+  const [editEbook, setEditEbook] = useState({ title: '', author: '', genre: '', year: 0, description: '' });
+  const [editGenres, setEditGenres] = useState<string[]>([]);
   const [ebookFile, setEbookFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -85,7 +88,7 @@ export default function AdminPage() {
   const [showAddAuthor, setShowAddAuthor] = useState(false);
   const [authorPhotoFile, setAuthorPhotoFile] = useState<File | null>(null);
   const [editingAuthor, setEditingAuthor] = useState<number | null>(null);
-  const [editAuthorData, setEditAuthorData] = useState({ bio: '', email: '', photoUrl: '' });
+  const [editAuthorData, setEditAuthorData] = useState({ bio: '', email: '', photoUrl: '', websiteUrl: '' });
 
   // Handle ebook file selection and metadata extraction
   const handleEbookFileChange = async (file: File | null) => {
@@ -159,6 +162,32 @@ export default function AdminPage() {
     }
   };
 
+  const startEditEbook = (ebook: typeof ebooks[0]) => {
+    setEditingEbook(ebook.id);
+    setEditEbook({
+      title: ebook.title,
+      author: ebook.author,
+      genre: ebook.genre,
+      year: ebook.year,
+      description: ebook.description || '',
+    });
+    setEditGenres(ebook.genre.split(', ').filter(g => g));
+  };
+
+  const handleUpdateEbook = async () => {
+    if (editingEbook === null) return;
+    try {
+      await updateEbook(editingEbook, {
+        ...editEbook,
+        genre: editGenres.join(', '),
+      });
+      setEditingEbook(null);
+    } catch (error) {
+      alert('Failed to update ebook. Please try again.');
+      console.error(error);
+    }
+  };
+
   // Author management
   const handleAddAuthor = async () => {
     if (newAuthor.name.trim()) {
@@ -194,10 +223,11 @@ export default function AdminPage() {
       await updateAuthor(authorId, {
         bio: editAuthorData.bio || undefined,
         email: editAuthorData.email || undefined,
+        websiteUrl: editAuthorData.websiteUrl || undefined,
       }, authorPhotoFile || undefined);
 
       setEditingAuthor(null);
-      setEditAuthorData({ bio: '', email: '', photoUrl: '' });
+      setEditAuthorData({ bio: '', email: '', photoUrl: '', websiteUrl: '' });
       setAuthorPhotoFile(null);
     } catch (error) {
       alert('Failed to update author. Please try again.');
@@ -551,23 +581,101 @@ export default function AdminPage() {
 
                   <div className="space-y-3">
                     {ebooks.map((ebook) => (
-                      <div
-                        key={ebook.id}
-                        className="flex items-center justify-between bg-white border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
-                      >
-                        <div>
-                          <h3 className="font-bold font-garamond text-lg text-primary">{ebook.title}</h3>
-                          <p className="font-crimson text-gray-600">
-                            by {ebook.author} • {ebook.genre} • {ebook.year}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => handleRemoveEbook(ebook.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                          title="Remove ebook"
-                        >
-                          <Trash2 size={20} />
-                        </button>
+                      <div key={ebook.id} className="bg-white border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        {editingEbook === ebook.id ? (
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <input
+                                type="text"
+                                value={editEbook.title}
+                                onChange={(e) => setEditEbook({ ...editEbook, title: e.target.value })}
+                                className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                                placeholder="Title"
+                              />
+                              <input
+                                type="text"
+                                value={editEbook.author}
+                                onChange={(e) => setEditEbook({ ...editEbook, author: e.target.value })}
+                                className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                                placeholder="Author"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-600 mb-2">Genre(s)</p>
+                              <div className="flex flex-wrap gap-2">
+                                {['Literary Fiction', 'Mystery/Thriller', 'Science Fiction', 'Fantasy', 'Romance', 'Horror', 'Historical Fiction', 'Adventure', 'Humor/Satire', 'Other'].map(genre => (
+                                  <button
+                                    key={genre}
+                                    type="button"
+                                    onClick={() => setEditGenres(prev => prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre])}
+                                    className={`px-3 py-1 rounded-full border text-sm transition-colors ${
+                                      editGenres.includes(genre)
+                                        ? 'bg-accent text-white border-accent'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:border-accent'
+                                    }`}
+                                  >
+                                    {editGenres.includes(genre) && '✓ '}{genre}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <input
+                                type="number"
+                                value={editEbook.year}
+                                onChange={(e) => setEditEbook({ ...editEbook, year: parseInt(e.target.value) })}
+                                className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                                placeholder="Year"
+                              />
+                              <input
+                                type="text"
+                                value={editEbook.description}
+                                onChange={(e) => setEditEbook({ ...editEbook, description: e.target.value })}
+                                className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                                placeholder="Description"
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleUpdateEbook}
+                                className="px-4 py-2 bg-accent text-white rounded hover:bg-primary transition-colors text-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingEbook(null)}
+                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors text-sm"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="font-bold font-garamond text-lg text-primary">{ebook.title}</h3>
+                              <p className="font-crimson text-gray-600">
+                                by {ebook.author} • {ebook.genre} • {ebook.year}
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => startEditEbook(ebook)}
+                                className="p-2 text-accent hover:bg-accent/10 rounded transition-colors"
+                                title="Edit ebook"
+                              >
+                                <Pencil size={20} />
+                              </button>
+                              <button
+                                onClick={() => handleRemoveEbook(ebook.id)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                title="Remove ebook"
+                              >
+                                <Trash2 size={20} />
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -679,6 +787,13 @@ export default function AdminPage() {
                               rows={3}
                               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                             />
+                            <input
+                              type="url"
+                              placeholder="Website / other work URL"
+                              value={editAuthorData.websiteUrl}
+                              onChange={(e) => setEditAuthorData({ ...editAuthorData, websiteUrl: e.target.value })}
+                              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
+                            />
                             <div>
                               <label className="block text-sm font-semibold font-crimson text-primary mb-2">
                                 Update Photo
@@ -743,6 +858,7 @@ export default function AdminPage() {
                                     bio: author.bio || '',
                                     email: author.email || '',
                                     photoUrl: author.photoUrl || '',
+                                    websiteUrl: author.websiteUrl || '',
                                   });
                                 }}
                                 className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
