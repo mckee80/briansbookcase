@@ -140,6 +140,15 @@ export default function EpubReader({
           overflow: visible !important;
           float: none !important;
         }
+        svg image, img {
+          object-fit: contain !important;
+          max-width: 100% !important;
+          max-height: 100% !important;
+        }
+        svg {
+          max-width: 100% !important;
+          max-height: 100vh !important;
+        }
       `;
       doc.head.appendChild(style);
     });
