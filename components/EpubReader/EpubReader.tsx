@@ -140,17 +140,21 @@ export default function EpubReader({
           overflow: visible !important;
           float: none !important;
         }
-        svg image, img {
+        img {
           object-fit: contain !important;
           max-width: 100% !important;
           max-height: 100% !important;
         }
-        svg {
-          max-width: 100% !important;
-          max-height: 100vh !important;
-        }
       `;
       doc.head.appendChild(style);
+
+      // Fix Calibre cover SVGs that stretch with preserveAspectRatio="none"
+      const svgs = doc.querySelectorAll('svg');
+      svgs.forEach((svg: Element) => {
+        if (svg.getAttribute('preserveAspectRatio') === 'none') {
+          svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        }
+      });
     });
 
     // Apply settings
