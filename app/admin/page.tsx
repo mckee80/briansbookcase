@@ -80,6 +80,7 @@ export default function AdminPage() {
   const [editEbook, setEditEbook] = useState({ title: '', author: '', genre: '', year: 0, description: '' });
   const [editGenres, setEditGenres] = useState<string[]>([]);
   const [editCoverFile, setEditCoverFile] = useState<File | null>(null);
+  const [editEpubFile, setEditEpubFile] = useState<File | null>(null);
   const [ebookFile, setEbookFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -179,6 +180,33 @@ export default function AdminPage() {
     if (editingEbook === null) return;
     try {
       let coverImageUrl: string | undefined;
+      let downloadUrl: string | undefined;
+      let wordCount: number | undefined;
+
+      if (editEpubFile) {
+        const fileExt = editEpubFile.name.split('.').pop();
+        const fileName = `${Date.now()}-${editEbook.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('ebooks')
+          .upload(fileName, editEpubFile, { cacheControl: '3600', upsert: false });
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('ebooks')
+          .getPublicUrl(fileName);
+
+        downloadUrl = urlData.publicUrl;
+
+        // Extract word count from new EPUB
+        if (editEpubFile.name.toLowerCase().endsWith('.epub')) {
+          const metadata = await extractEbookMetadata(editEpubFile);
+          if (metadata.wordCount) {
+            wordCount = metadata.wordCount;
+          }
+        }
+      }
 
       if (editCoverFile) {
         const fileExt = editCoverFile.name.split('.').pop();
@@ -201,9 +229,12 @@ export default function AdminPage() {
         ...editEbook,
         genre: editGenres.join(', '),
         ...(coverImageUrl ? { coverImage: coverImageUrl } : {}),
+        ...(downloadUrl ? { downloadUrl } : {}),
+        ...(wordCount ? { wordCount } : {}),
       });
       setEditingEbook(null);
       setEditCoverFile(null);
+      setEditEpubFile(null);
     } catch (error) {
       alert('Failed to update ebook. Please try again.');
       console.error(error);
@@ -659,6 +690,15 @@ export default function AdminPage() {
                               />
                             </div>
                             <div>
+                              <label className="block text-sm text-gray-600 mb-1">Replace EPUB File</label>
+                              <input
+                                type="file"
+                                accept=".epub,.doc,.docx"
+                                onChange={(e) => setEditEpubFile(e.target.files?.[0] || null)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                              />
+                            </div>
+                            <div>
                               <label className="block text-sm text-gray-600 mb-1">Update Cover Image</label>
                               <input
                                 type="file"
@@ -675,7 +715,7 @@ export default function AdminPage() {
                                 Save
                               </button>
                               <button
-                                onClick={() => { setEditingEbook(null); setEditCoverFile(null); }}
+                                onClick={() => { setEditingEbook(null); setEditCoverFile(null); setEditEpubFile(null); }}
                                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors text-sm"
                               >
                                 Cancel
