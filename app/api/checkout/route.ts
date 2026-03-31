@@ -1,62 +1,106 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { getPriceId, stripeHelpers } from '@/lib/stripe';
 
-// Mark this route as dynamic since it uses searchParams
 export const dynamic = 'force-dynamic';
 
-const MEMBERSHIP_TIERS = [
-  { name: 'supporter', price: 5 },
-  { name: 'advocate', price: 10 },
-  { name: 'champion', price: 20 },
-];
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const tier = searchParams.get('tier');
+    const interval = (searchParams.get('interval') || 'month') as 'month' | 'year';
+    const customAmount = searchParams.get('customAmount');
 
     if (!tier) {
       return NextResponse.redirect(new URL('/membership', request.url));
     }
 
-    const selectedTier = MEMBERSHIP_TIERS.find(t => t.name === tier.toLowerCase());
+    // Get the authenticated user from the auth cookie
+    const accessToken = request.cookies.get('sb-access-token')?.value
+      || request.cookies.get(`sb-${new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || '').hostname.split('.')[0]}-auth-token`)?.value;
 
-    if (!selectedTier) {
-      return NextResponse.redirect(new URL('/membership', request.url));
+    // Try to get user from Supabase auth
+    let userEmail: string | null = null;
+    let userId: string | null = null;
+
+    if (accessToken) {
+      try {
+        const tokenData = JSON.parse(accessToken);
+        const token = Array.isArray(tokenData) ? tokenData[0] : tokenData;
+        const { data: { user } } = await supabase.auth.getUser(token);
+        if (user) {
+          userEmail = user.email || null;
+          userId = user.id;
+        }
+      } catch {
+        // Token parsing failed, try as raw string
+        const { data: { user } } = await supabase.auth.getUser(accessToken);
+        if (user) {
+          userEmail = user.email || null;
+          userId = user.id;
+        }
+      }
     }
 
-    // TODO: Implement actual Stripe checkout session creation
-    // For now, redirect to a payment placeholder page
-    // Once Stripe is configured, create a checkout session and redirect to Stripe
+    // Also check for email in query params as fallback (passed from signup)
+    if (!userEmail) {
+      userEmail = searchParams.get('email');
+      userId = searchParams.get('userId');
+    }
 
-    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-    //
-    // const session = await stripe.checkout.sessions.create({
-    //   mode: 'subscription',
-    //   line_items: [
-    //     {
-    //       price_data: {
-    //         currency: 'usd',
-    //         product_data: {
-    //           name: `${selectedTier.name.charAt(0).toUpperCase() + selectedTier.name.slice(1)} Membership`,
-    //           description: 'Monthly support for mental health charities',
-    //         },
-    //         unit_amount: selectedTier.price * 100,
-    //         recurring: {
-    //           interval: 'month',
-    //         },
-    //       },
-    //       quantity: 1,
-    //     },
-    //   ],
-    //   success_url: `${request.nextUrl.origin}/library?session_id={CHECKOUT_SESSION_ID}`,
-    //   cancel_url: `${request.nextUrl.origin}/membership`,
-    // });
-    //
-    // return NextResponse.redirect(session.url!);
+    if (!userEmail) {
+      return NextResponse.redirect(new URL('/login?redirect=/membership', request.url));
+    }
 
-    // Temporary: redirect to library with a message
-    return NextResponse.redirect(new URL('/library?payment=pending', request.url));
+    const origin = request.nextUrl.origin;
+    const successUrl = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${origin}/membership`;
+    const metadata = {
+      user_id: userId || '',
+      tier: tier.toLowerCase(),
+      interval,
+    };
+
+    let session;
+
+    if (tier.toLowerCase() === 'custom' && customAmount) {
+      const amountCents = Math.round(parseFloat(customAmount) * 100);
+      if (amountCents < 100) {
+        return NextResponse.redirect(new URL('/membership?error=amount', request.url));
+      }
+      session = await stripeHelpers.createCustomSubscriptionSession({
+        amountCents,
+        interval,
+        successUrl,
+        cancelUrl,
+        customerEmail: userEmail,
+        metadata,
+      });
+    } else {
+      const priceId = getPriceId(tier, interval);
+      if (!priceId) {
+        return NextResponse.redirect(new URL('/membership', request.url));
+      }
+      session = await stripeHelpers.createSubscriptionSession({
+        priceId,
+        successUrl,
+        cancelUrl,
+        customerEmail: userEmail,
+        metadata,
+      });
+    }
+
+    if (!session.url) {
+      return NextResponse.redirect(new URL('/membership?error=checkout', request.url));
+    }
+
+    return NextResponse.redirect(session.url);
   } catch (error) {
     console.error('Checkout error:', error);
     return NextResponse.redirect(new URL('/membership?error=checkout', request.url));

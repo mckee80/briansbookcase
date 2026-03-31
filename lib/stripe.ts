@@ -5,106 +5,94 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2025-12-15.clover',
 });
 
-// Stripe product price IDs (set these after creating products in Stripe Dashboard)
-export const STRIPE_PRICES = {
-  MEMBERSHIP_SILVER: process.env.STRIPE_PRICE_SILVER || '',
-  MEMBERSHIP_GOLD: process.env.STRIPE_PRICE_GOLD || '',
-  MEMBERSHIP_PLATINUM: process.env.STRIPE_PRICE_PLATINUM || '',
+// Price IDs mapped by tier and billing interval
+export const STRIPE_PRICES: Record<string, Record<string, string>> = {
+  supporter: {
+    month: process.env.STRIPE_PRICE_5_MONTHLY || '',
+    year: process.env.STRIPE_PRICE_5_YEARLY || '',
+  },
+  advocate: {
+    month: process.env.STRIPE_PRICE_10_MONTHLY || '',
+    year: process.env.STRIPE_PRICE_10_YEARLY || '',
+  },
+  champion: {
+    month: process.env.STRIPE_PRICE_20_MONTHLY || '',
+    year: process.env.STRIPE_PRICE_20_YEARLY || '',
+  },
 };
+
+// Get price ID for a tier and interval
+export function getPriceId(tier: string, interval: 'month' | 'year'): string | null {
+  const tierPrices = STRIPE_PRICES[tier.toLowerCase()];
+  if (!tierPrices) return null;
+  return tierPrices[interval] || null;
+}
 
 // Helper functions for Stripe operations
 export const stripeHelpers = {
-  // Create a checkout session for one-time payment
-  async createCheckoutSession({
-    priceId,
-    successUrl,
-    cancelUrl,
-    customerId,
-    metadata = {},
-  }: {
-    priceId: string;
-    successUrl: string;
-    cancelUrl: string;
-    customerId?: string;
-    metadata?: Record<string, string>;
-  }) {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      customer: customerId,
-      metadata,
-    });
-
-    return session;
-  },
-
   // Create a subscription checkout session
   async createSubscriptionSession({
     priceId,
     successUrl,
     cancelUrl,
-    customerId,
+    customerEmail,
     metadata = {},
   }: {
     priceId: string;
     successUrl: string;
     cancelUrl: string;
-    customerId?: string;
+    customerEmail: string;
     metadata?: Record<string, string>;
   }) {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
-      customer: customerId,
+      customer_email: customerEmail,
       metadata,
+      subscription_data: { metadata },
     });
-
     return session;
   },
 
-  // Create a Stripe customer
-  async createCustomer({
-    email,
-    name,
+  // Create a subscription checkout with a custom amount
+  async createCustomSubscriptionSession({
+    amountCents,
+    interval,
+    successUrl,
+    cancelUrl,
+    customerEmail,
     metadata = {},
   }: {
-    email: string;
-    name?: string;
+    amountCents: number;
+    interval: 'month' | 'year';
+    successUrl: string;
+    cancelUrl: string;
+    customerEmail: string;
     metadata?: Record<string, string>;
   }) {
-    const customer = await stripe.customers.create({
-      email,
-      name,
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: "Brian's Bookcase - Custom Donation",
+            description: 'Monthly support for mental health charities',
+          },
+          unit_amount: amountCents,
+          recurring: { interval },
+        },
+        quantity: 1,
+      }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer_email: customerEmail,
       metadata,
+      subscription_data: { metadata },
     });
-
-    return customer;
-  },
-
-  // Cancel a subscription
-  async cancelSubscription(subscriptionId: string) {
-    const subscription = await stripe.subscriptions.cancel(subscriptionId);
-    return subscription;
-  },
-
-  // Get subscription details
-  async getSubscription(subscriptionId: string) {
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    return subscription;
+    return session;
   },
 
   // Create a portal session for customer to manage subscription
@@ -113,7 +101,6 @@ export const stripeHelpers = {
       customer: customerId,
       return_url: returnUrl,
     });
-
     return session;
   },
 };

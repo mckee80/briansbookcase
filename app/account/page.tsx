@@ -24,6 +24,13 @@ export default function Account() {
 
   const currentTier = user?.user_metadata?.membership_tier || 'Free';
   const currentPrice = user?.user_metadata?.membership_price || 0;
+  const stripeCustomerId = user?.user_metadata?.stripe_customer_id;
+
+  const handleManageSubscription = () => {
+    if (stripeCustomerId) {
+      router.push(`/api/stripe/portal?customerId=${stripeCustomerId}`);
+    }
+  };
 
   const handleTierChange = async () => {
     if (!selectedTier) {
@@ -49,7 +56,19 @@ export default function Account() {
         new_tier: tier.name,
       });
 
-      // Update user metadata
+      // If they have a Stripe subscription, send them to the billing portal
+      if (stripeCustomerId && tier.price > 0) {
+        router.push(`/api/stripe/portal?customerId=${stripeCustomerId}`);
+        return;
+      }
+
+      // If changing to a new paid tier (no existing subscription), go to checkout
+      if (tier.price > 0 && !stripeCustomerId) {
+        router.push(`/api/checkout?tier=${tier.name.toLowerCase()}&interval=month&email=${user?.email}`);
+        return;
+      }
+
+      // Free tier change — just update metadata
       const { error } = await supabase.auth.updateUser({
         data: {
           membership_tier: tier.name,
@@ -60,18 +79,7 @@ export default function Account() {
       if (error) throw error;
 
       setMessage('Tier updated successfully!');
-
-      // If changing to a paid tier, redirect to checkout
-      if (tier.price > 0 && tier.price !== currentPrice) {
-        setTimeout(() => {
-          router.push(`/api/checkout?tier=${tier.name.toLowerCase()}`);
-        }, 1500);
-      } else {
-        // Refresh the page to show updated tier
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      }
+      setTimeout(() => window.location.reload(), 1500);
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Failed to update tier');
     } finally {
@@ -83,31 +91,25 @@ export default function Account() {
     setDeleteLoading(true);
 
     try {
-      // Track account deletion before deleting
       await supabase.from('account_deletions').insert({
         user_id: user?.id,
         user_email: user?.email,
         membership_tier: currentTier,
       });
 
-      // Delete the user account from Supabase Auth
       const { error } = await supabase.rpc('delete_user');
 
       if (error) {
-        // If RPC function doesn't exist, use auth admin delete
-        // This requires admin privileges, so as a fallback we'll just sign out
         console.error('Delete user error:', error);
         await supabase.auth.signOut();
         router.push('/');
         return;
       }
 
-      // Sign out and redirect
       await supabase.auth.signOut();
       router.push('/?message=account-deleted');
     } catch (err) {
       console.error('Error deleting account:', err);
-      // Fallback: just sign out
       await supabase.auth.signOut();
       router.push('/');
     } finally {
@@ -147,9 +149,19 @@ export default function Account() {
                   <strong>Current Tier:</strong> {currentTier}
                 </p>
                 <p className="text-lg">
-                  <strong>Monthly Contribution:</strong> ${currentPrice}/month
+                  <strong>Contribution:</strong> ${currentPrice}/{currentPrice > 0 ? 'month' : 'month'}
                 </p>
               </div>
+
+              {/* Manage Subscription button for paying members */}
+              {stripeCustomerId && (
+                <button
+                  onClick={handleManageSubscription}
+                  className="w-full py-3 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold"
+                >
+                  Manage Subscription
+                </button>
+              )}
 
               <div className="border-t pt-4">
                 <h3 className="text-xl font-bold font-garamond mb-3 text-primary">

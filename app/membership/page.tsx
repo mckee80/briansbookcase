@@ -10,50 +10,50 @@ import EmailVerificationModal from '@/components/EmailVerificationModal';
 const MEMBERSHIP_TIERS = [
   {
     name: 'Free',
-    price: 0,
+    monthlyPrice: 0,
+    yearlyPrice: 0,
     features: [
       'Access entire library',
       'Download all ebooks',
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Choose Free',
     featured: false,
   },
   {
     name: 'Supporter',
-    price: 5,
+    monthlyPrice: 5,
+    yearlyPrice: 60,
     features: [
       'Access entire library',
       'Download all ebooks',
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Choose $5/month',
     featured: false,
   },
   {
     name: 'Advocate',
-    price: 10,
+    monthlyPrice: 10,
+    yearlyPrice: 120,
     features: [
       'Access entire library',
       'Download all ebooks',
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Choose $10/month',
     featured: true,
   },
   {
     name: 'Custom',
-    price: 0,
+    monthlyPrice: 0,
+    yearlyPrice: 0,
     features: [
       'Access entire library',
       'Download all ebooks',
       'New releases monthly',
       'Browse all merchandise',
     ],
-    buttonText: 'Choose Custom Amount',
     featured: false,
   },
 ];
@@ -61,6 +61,7 @@ const MEMBERSHIP_TIERS = [
 export default function Membership() {
   const router = useRouter();
   const [selectedTier, setSelectedTier] = useState('advocate');
+  const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -73,8 +74,18 @@ export default function Membership() {
 
   const handleTierSelect = (tierName: string) => {
     setSelectedTier(tierName.toLowerCase());
-    // Smooth scroll to signup form
     document.getElementById('signup-form')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const getPrice = (tier: typeof MEMBERSHIP_TIERS[0]) => {
+    return billingInterval === 'month' ? tier.monthlyPrice : tier.yearlyPrice;
+  };
+
+  const getButtonText = (tier: typeof MEMBERSHIP_TIERS[0]) => {
+    if (tier.name === 'Free') return 'Choose Free';
+    if (tier.name === 'Custom') return 'Choose Custom Amount';
+    const price = getPrice(tier);
+    return `Choose $${price}/${billingInterval === 'month' ? 'month' : 'year'}`;
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -92,11 +103,10 @@ export default function Membership() {
       return;
     }
 
-    // Validate custom amount if custom tier is selected
     if (selectedTier === 'custom') {
       const amount = parseFloat(customAmount);
-      if (!customAmount || isNaN(amount) || amount < 0) {
-        setError('Please enter a valid custom amount');
+      if (!customAmount || isNaN(amount) || amount < 1) {
+        setError('Please enter a valid custom amount (minimum $1)');
         return;
       }
     }
@@ -105,9 +115,7 @@ export default function Membership() {
 
     try {
       const tier = MEMBERSHIP_TIERS.find(t => t.name.toLowerCase() === selectedTier);
-
-      // Determine the price based on tier selection
-      let price = tier?.price || 0;
+      let price = tier ? getPrice(tier) : 0;
       let tierName = tier?.name || 'Free';
 
       if (selectedTier === 'custom') {
@@ -129,18 +137,35 @@ export default function Membership() {
       if (signupError) throw signupError;
 
       if (data.user) {
-        // Store email for modal and show verification modal
         setSignupEmail(email);
         setShowEmailModal(true);
         setSuccess(true);
-
-        // Note: User will need to verify email before they can access the library
-        // The redirect logic is removed - they'll need to verify and then log in
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during signup');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // After email verification, redirect paid tiers to checkout
+  const handleEmailModalClose = () => {
+    setShowEmailModal(false);
+    const tier = MEMBERSHIP_TIERS.find(t => t.name.toLowerCase() === selectedTier);
+    const price = selectedTier === 'custom' ? parseFloat(customAmount) : (tier ? getPrice(tier) : 0);
+
+    if (price > 0) {
+      const params = new URLSearchParams({
+        tier: selectedTier,
+        interval: billingInterval,
+        email: signupEmail,
+      });
+      if (selectedTier === 'custom') {
+        params.set('customAmount', customAmount);
+      }
+      router.push(`/api/checkout?${params.toString()}`);
+    } else {
+      router.push('/login');
     }
   };
 
@@ -153,13 +178,39 @@ export default function Membership() {
             Support Mental Health
           </h1>
           <p className="font-crimson text-lg md:text-xl text-textLight max-w-3xl mx-auto mb-6">
-            Your monthly contribution goes directly to mental health organizations
+            Your contribution goes directly to mental health organizations
           </p>
           <div className="inline-flex items-center gap-3 bg-accent/10 px-6 py-4 rounded-xl max-w-4xl">
             <Heart className="text-accent flex-shrink-0" size={24} />
             <p className="font-crimson text-primary font-medium">
               100% of donations support organizations like AFSP, Crisis Text Line, and The Trevor Project
             </p>
+          </div>
+        </div>
+
+        {/* Billing Interval Toggle */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex bg-white border-2 border-border rounded-full p-1">
+            <button
+              onClick={() => setBillingInterval('month')}
+              className={`px-6 py-2 rounded-full font-crimson font-semibold transition-colors ${
+                billingInterval === 'month'
+                  ? 'bg-accent text-white'
+                  : 'text-gray-600 hover:text-primary'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingInterval('year')}
+              className={`px-6 py-2 rounded-full font-crimson font-semibold transition-colors ${
+                billingInterval === 'year'
+                  ? 'bg-accent text-white'
+                  : 'text-gray-600 hover:text-primary'
+              }`}
+            >
+              Yearly
+            </button>
           </div>
         </div>
 
@@ -192,8 +243,12 @@ export default function Membership() {
                     </div>
                   ) : (
                     <>
-                      <span className="text-5xl font-bold text-primary font-garamond">${tier.price}</span>
-                      <span className="text-textLight font-crimson text-xl">/month</span>
+                      <span className="text-5xl font-bold text-primary font-garamond">
+                        ${getPrice(tier)}
+                      </span>
+                      <span className="text-textLight font-crimson text-xl">
+                        /{billingInterval === 'month' ? 'month' : 'year'}
+                      </span>
                     </>
                   )}
                 </div>
@@ -213,18 +268,18 @@ export default function Membership() {
                       : 'bg-primary text-white hover:bg-gray-700'
                   }`}
                 >
-                  {tier.buttonText}
+                  {getButtonText(tier)}
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Why Monthly Donations */}
+        {/* Why Donations */}
         <div className="max-w-3xl mx-auto mb-12 bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
           <p className="font-crimson text-primary text-center leading-relaxed">
-            We ask for monthly donations because consistent support from many people, even in small amounts,
-            is more sustainable than occasional larger gifts. Your monthly contribution joins with others to
+            We ask for donations because consistent support from many people, even in small amounts,
+            is more sustainable than occasional larger gifts. Your contribution joins with others to
             create reliable funding for mental health and crisis intervention programs.
           </p>
         </div>
@@ -244,7 +299,7 @@ export default function Membership() {
 
             {success && (
               <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                Account created successfully! Redirecting...
+                Account created successfully!
               </div>
             )}
 
@@ -259,28 +314,33 @@ export default function Membership() {
                   onChange={(e) => setSelectedTier(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent font-crimson"
                 >
-                  {MEMBERSHIP_TIERS.map((tier) => (
-                    <option key={tier.name} value={tier.name.toLowerCase()}>
-                      {tier.name === 'Custom'
-                        ? 'Custom - Choose your amount'
-                        : `${tier.name} - $${tier.price}/month`
-                      }
-                    </option>
-                  ))}
+                  {MEMBERSHIP_TIERS.map((tier) => {
+                    const price = getPrice(tier);
+                    return (
+                      <option key={tier.name} value={tier.name.toLowerCase()}>
+                        {tier.name === 'Custom'
+                          ? 'Custom - Choose your amount'
+                          : tier.name === 'Free'
+                          ? 'Free - $0'
+                          : `${tier.name} - $${price}/${billingInterval === 'month' ? 'month' : 'year'}`
+                        }
+                      </option>
+                    );
+                  })}
                 </select>
                 {selectedTier === 'custom' && (
                   <div className="mt-3">
                     <label htmlFor="customAmount" className="block font-crimson mb-2 text-sm text-primary">
-                      Enter your monthly amount ($)
+                      Enter your {billingInterval === 'month' ? 'monthly' : 'yearly'} amount ($)
                     </label>
                     <input
                       type="number"
                       id="customAmount"
-                      min="0"
+                      min="1"
                       step="1"
                       value={customAmount}
                       onChange={(e) => setCustomAmount(e.target.value)}
-                      placeholder="0"
+                      placeholder="1"
                       className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     />
@@ -360,10 +420,7 @@ export default function Membership() {
       {/* Email Verification Modal */}
       <EmailVerificationModal
         isOpen={showEmailModal}
-        onClose={() => {
-          setShowEmailModal(false);
-          router.push('/login');
-        }}
+        onClose={handleEmailModalClose}
         email={signupEmail}
       />
     </main>
