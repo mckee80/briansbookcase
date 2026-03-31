@@ -172,6 +172,13 @@ export default function Membership() {
   return (
     <main className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
+        {/* Temporary Notice */}
+        <div className="max-w-3xl mx-auto mb-8 bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 text-center">
+          <p className="font-crimson text-primary font-semibold">
+            We&apos;re currently setting up paid memberships. For now, only free memberships are available. Paid tiers coming soon!
+          </p>
+        </div>
+
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-garamond mb-4 text-primary">
