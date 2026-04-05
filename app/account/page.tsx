@@ -64,7 +64,7 @@ export default function Account() {
 
       // If changing to a new paid tier (no existing subscription), go to checkout
       if (tier.price > 0 && !stripeCustomerId) {
-        router.push(`/api/checkout?tier=${tier.name.toLowerCase()}&interval=month&email=${user?.email}`);
+        router.push(`/api/checkout?tier=${tier.name.toLowerCase()}&interval=month&email=${encodeURIComponent(user?.email || '')}`);
         return;
       }
 

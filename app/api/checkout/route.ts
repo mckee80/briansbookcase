@@ -101,8 +101,8 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.redirect(session.url);
-  } catch (error) {
-    console.error('Checkout error:', error);
-    return NextResponse.redirect(new URL('/membership?error=checkout', request.url));
+  } catch (error: any) {
+    console.error('Checkout error:', error?.message || error);
+    return NextResponse.redirect(new URL(`/membership?error=checkout&detail=${encodeURIComponent(error?.message || 'unknown')}`, request.url));
   }
 }
