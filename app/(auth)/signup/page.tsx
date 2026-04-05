@@ -108,14 +108,13 @@ function SignupForm() {
         <form onSubmit={handleSignup} className="space-y-4">
           <div>
             <label htmlFor="name" className="block font-crimson mb-2">
-              Full Name
+              Full Name <span className="text-gray-400 text-sm">(optional)</span>
             </label>
             <input
               type="text"
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
