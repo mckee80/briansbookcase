@@ -137,9 +137,23 @@ export default function Membership() {
       if (signupError) throw signupError;
 
       if (data.user) {
-        setSignupEmail(email);
-        setShowEmailModal(true);
-        setSuccess(true);
+        if (data.session) {
+          // Email confirmation disabled — user is auto-confirmed
+          setSuccess(true);
+          const price = selectedTier === 'custom' ? parseFloat(customAmount) : (tier ? getPrice(tier) : 0);
+          if (price > 0) {
+            const params = new URLSearchParams({ tier: selectedTier, interval: billingInterval, email, userId: data.user.id });
+            if (selectedTier === 'custom') params.set('customAmount', customAmount);
+            router.push(`/api/checkout?${params.toString()}`);
+          } else {
+            router.push('/library');
+          }
+        } else {
+          // Email confirmation required — show verification modal
+          setSignupEmail(email);
+          setShowEmailModal(true);
+          setSuccess(true);
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during signup');

@@ -25,11 +25,20 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
-        const userId = session.metadata?.user_id;
+        let userId = session.metadata?.user_id;
         const tier = session.metadata?.tier || 'supporter';
         const interval = session.metadata?.interval || 'month';
         const customerId = session.customer as string;
         const subscriptionId = session.subscription as string;
+
+        // If no user_id in metadata, look up by email
+        if (!userId && session.customer_email) {
+          const { data: users } = await supabaseAdmin.auth.admin.listUsers();
+          const matchedUser = users?.users?.find(u => u.email === session.customer_email);
+          if (matchedUser) {
+            userId = matchedUser.id;
+          }
+        }
 
         if (userId) {
           // Upsert membership record
