@@ -91,6 +91,15 @@ export default function Account() {
     setDeleteLoading(true);
 
     try {
+      // Cancel Stripe subscription if one exists
+      if (stripeCustomerId) {
+        try {
+          await fetch(`/api/stripe/cancel?customerId=${encodeURIComponent(stripeCustomerId)}`, { method: 'POST' });
+        } catch (e) {
+          console.error('Failed to cancel Stripe subscription:', e);
+        }
+      }
+
       await supabase.from('account_deletions').insert({
         user_id: user?.id,
         user_email: user?.email,
