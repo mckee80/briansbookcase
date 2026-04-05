@@ -73,14 +73,18 @@ export async function POST(request: NextRequest) {
           : subscription.status === 'canceled' ? 'canceled'
           : 'incomplete';
 
+        const item = subscription.items?.data?.[0];
+        const periodStart = item?.current_period_start || subscription.current_period_start;
+        const periodEnd = item?.current_period_end || subscription.current_period_end || subscription.cancel_at;
+
         await supabaseAdmin.from('memberships')
           .update({
             status,
-            stripe_price_id: subscription.items?.data?.[0]?.price?.id || null,
-            current_period_start: subscription.current_period_start
-              ? new Date(subscription.current_period_start * 1000).toISOString() : null,
-            current_period_end: subscription.current_period_end
-              ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+            stripe_price_id: item?.price?.id || null,
+            current_period_start: periodStart
+              ? new Date(periodStart * 1000).toISOString() : null,
+            current_period_end: periodEnd
+              ? new Date(periodEnd * 1000).toISOString() : null,
             updated_at: new Date().toISOString(),
           })
           .eq('stripe_subscription_id', subscriptionId);
