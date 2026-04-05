@@ -105,6 +105,12 @@ export default function Membership() {
             if (selectedTier === 'custom') params.set('customAmount', customAmount);
             router.push(`/api/checkout?${params.toString()}`);
           } else {
+            // Create free membership row
+            await supabase.from('memberships').upsert({
+              user_id: data.user.id,
+              tier: 'free',
+              status: 'active',
+            }, { onConflict: 'user_id' });
             router.push('/library');
           }
         } else {

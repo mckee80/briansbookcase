@@ -69,9 +69,14 @@ function SignupForm() {
         setSuccess(true);
 
         // Conditional redirect based on tier
-        setTimeout(() => {
+        setTimeout(async () => {
           if (tier?.price === 0) {
-            // Free tier - go directly to library
+            // Create free membership row
+            await supabase.from('memberships').upsert({
+              user_id: data.user!.id,
+              tier: 'free',
+              status: 'active',
+            }, { onConflict: 'user_id' });
             router.push('/library');
           } else {
             // Paid tier - redirect to Stripe Checkout
