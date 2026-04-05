@@ -33,10 +33,29 @@ export async function POST(request: NextRequest) {
 
         // If no user_id in metadata, look up by email
         if (!userId && session.customer_email) {
-          const { data: users } = await supabaseAdmin.auth.admin.listUsers();
-          const matchedUser = users?.users?.find(u => u.email === session.customer_email);
-          if (matchedUser) {
-            userId = matchedUser.id;
+          const { data } = await supabaseAdmin
+            .from('profiles')
+            .select('id')
+            .eq('email', session.customer_email)
+            .single();
+
+          if (data) {
+            userId = data.id;
+          } else {
+            // Fallback: search auth users with pagination
+            let page = 1;
+            let found = false;
+            while (!found) {
+              const { data: users } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 100 });
+              if (!users?.users?.length) break;
+              const matchedUser = users.users.find(u => u.email === session.customer_email);
+              if (matchedUser) {
+                userId = matchedUser.id;
+                found = true;
+              }
+              if (users.users.length < 100) break;
+              page++;
+            }
           }
         }
 
@@ -54,13 +73,16 @@ export async function POST(request: NextRequest) {
           }, { onConflict: 'user_id' });
 
           // Update user metadata
-          await supabaseAdmin.auth.admin.updateUserById(userId, {
+          const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
             user_metadata: {
               membership_tier: tier.charAt(0).toUpperCase() + tier.slice(1),
               membership_price: (session.amount_total || 0) / 100,
               stripe_customer_id: customerId,
             },
           });
+          if (metaError) {
+            console.error('Failed to update user metadata:', metaError);
+          }
         }
         break;
       }
