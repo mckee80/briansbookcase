@@ -3,59 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Heart, Check } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import EmailVerificationModal from '@/components/EmailVerificationModal';
 
 const MEMBERSHIP_TIERS = [
-  {
-    name: 'Free',
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    features: [
-      'Access entire library',
-      'Download all ebooks',
-      'New releases monthly',
-      'Browse all merchandise',
-    ],
-    featured: false,
-  },
-  {
-    name: 'Supporter',
-    monthlyPrice: 5,
-    yearlyPrice: 60,
-    features: [
-      'Access entire library',
-      'Download all ebooks',
-      'New releases monthly',
-      'Browse all merchandise',
-    ],
-    featured: false,
-  },
-  {
-    name: 'Advocate',
-    monthlyPrice: 10,
-    yearlyPrice: 120,
-    features: [
-      'Access entire library',
-      'Download all ebooks',
-      'New releases monthly',
-      'Browse all merchandise',
-    ],
-    featured: true,
-  },
-  {
-    name: 'Custom',
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    features: [
-      'Access entire library',
-      'Download all ebooks',
-      'New releases monthly',
-      'Browse all merchandise',
-    ],
-    featured: false,
-  },
+  { name: 'Free', monthlyPrice: 0, yearlyPrice: 0, featured: false },
+  { name: 'Supporter', monthlyPrice: 5, yearlyPrice: 60, featured: false },
+  { name: 'Advocate', monthlyPrice: 10, yearlyPrice: 120, featured: true },
+  { name: 'Champion', monthlyPrice: 20, yearlyPrice: 240, featured: false },
+  { name: 'Custom', monthlyPrice: 0, yearlyPrice: 0, featured: false },
 ];
 
 export default function Membership() {
@@ -235,8 +192,13 @@ export default function Membership() {
           </div>
         </div>
 
+        {/* Shared Benefits */}
+        <p className="text-center font-crimson text-lg text-gray-700 mb-8">
+          Every tier includes full library access, ebook downloads, and new stories monthly. Choose what you can afford to give.
+        </p>
+
         {/* Tier Selection */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-7xl mx-auto mb-16">
           {MEMBERSHIP_TIERS.map((tier) => (
             <div
               key={tier.name}
@@ -273,14 +235,6 @@ export default function Membership() {
                     </>
                   )}
                 </div>
-                <ul className="space-y-3 mb-8">
-                  {tier.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center font-crimson text-textLight">
-                      <Check className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" size={16} />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
                 <button
                   onClick={() => handleTierSelect(tier.name)}
                   className={`w-full py-3 rounded-lg font-semibold transition-colors font-crimson ${
