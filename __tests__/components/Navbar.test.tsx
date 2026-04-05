@@ -27,7 +27,7 @@ describe('Navbar Component', () => {
 
     expect(screen.getByText('Library')).toBeInTheDocument();
     expect(screen.getByText('Shop')).toBeInTheDocument();
-    expect(screen.getByText('Join Us!')).toBeInTheDocument();
+    expect(screen.getByText('Support Us!')).toBeInTheDocument();
     expect(screen.getByText('About')).toBeInTheDocument();
     expect(screen.getByText('Authors')).toBeInTheDocument();
   });
@@ -36,7 +36,7 @@ describe('Navbar Component', () => {
     render(<Navbar />);
 
     expect(screen.getByText('Login')).toBeInTheDocument();
-    expect(screen.getByText('Join Us!')).toBeInTheDocument();
+    expect(screen.getByText('Support Us!')).toBeInTheDocument();
   });
 
   it('shows account and sign out buttons when user is authenticated', () => {

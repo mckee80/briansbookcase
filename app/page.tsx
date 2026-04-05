@@ -31,7 +31,7 @@ export default function Home() {
             <div className="animate-fade-in-up delay-300 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/membership">
                 <button className="cta-pulse px-8 py-4 bg-accent text-white rounded-lg hover:bg-primary transition-colors font-semibold text-lg">
-                  Join Us!
+                  Support Us!
                 </button>
               </Link>
               <Link href="/library">
