@@ -260,6 +260,13 @@ export default function Membership() {
           </p>
         </div>
 
+        {/* Tax-Deductible Notice */}
+        <div className="max-w-3xl mx-auto mb-12">
+          <p className="font-crimson text-xs text-gray-500 text-center leading-relaxed">
+            Brian&apos;s Bookcase is a Pennsylvania nonprofit corporation operating through a fiscal sponsorship with Players Philanthropy Fund, Inc., a Texas nonprofit corporation recognized by IRS as a tax-exempt public charity under Section 501(c)(3) of the Internal Revenue Code (Federal Tax ID: 27-6601178, ppf.org/pp). Contributions to Brian&apos;s Bookcase qualify as tax-deductible to the fullest extent of the law.
+          </p>
+        </div>
+
         {/* Signup Form */}
         <div id="signup-form" className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg border-2 border-border shadow-lg p-8 relative page-corner">

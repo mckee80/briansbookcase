@@ -56,6 +56,9 @@ export default function Footer() {
         </div>
         <div className="mt-8 pt-8 border-t border-accent text-center font-crimson text-sm">
           <p>&copy; {new Date().getFullYear()} Brian&apos;s Bookcase. All rights reserved.</p>
+          <p className="mt-4 text-xs text-parchment/60 max-w-3xl mx-auto">
+            Brian&apos;s Bookcase is a Pennsylvania nonprofit corporation operating through a fiscal sponsorship with Players Philanthropy Fund, Inc., a Texas nonprofit corporation recognized by IRS as a tax-exempt public charity under Section 501(c)(3) of the Internal Revenue Code (Federal Tax ID: 27-6601178, ppf.org/pp). Contributions to Brian&apos;s Bookcase qualify as tax-deductible to the fullest extent of the law.
+          </p>
         </div>
       </div>
     </footer>
