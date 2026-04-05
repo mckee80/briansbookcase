@@ -306,7 +306,7 @@ export default function Membership() {
                 {selectedTier === 'custom' && (
                   <div className="mt-3">
                     <label htmlFor="customAmount" className="block font-crimson mb-2 text-sm text-primary">
-                      Enter your {billingInterval === 'month' ? 'monthly' : 'yearly'} amount ($)
+                      Enter your monthly amount ($){billingInterval === 'year' ? ' — billed yearly' : ''}
                     </label>
                     <input
                       type="number"

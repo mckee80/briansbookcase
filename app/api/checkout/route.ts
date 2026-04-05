@@ -70,10 +70,12 @@ export async function GET(request: NextRequest) {
     let session;
 
     if (tier.toLowerCase() === 'custom' && customAmount) {
-      const amountCents = Math.round(parseFloat(customAmount) * 100);
-      if (amountCents < 100) {
+      const monthlyAmountCents = Math.round(parseFloat(customAmount) * 100);
+      if (monthlyAmountCents < 100) {
         return NextResponse.redirect(new URL('/membership?error=amount', request.url));
       }
+      // Custom amount is always monthly; multiply by 12 for yearly billing
+      const amountCents = interval === 'year' ? monthlyAmountCents * 12 : monthlyAmountCents;
       session = await stripeHelpers.createCustomSubscriptionSession({
         amountCents,
         interval,
